@@ -295,21 +295,21 @@ async function experimentInit() {
     "Nature_Valley","PLANTERS_Cashews","Pocky","Pringles","RitterSport","TERRA_chips","Twix"
   ];
   imcQuestion = new visual.TextStim({
-    win: psychoJS.window, name: 'imcQuestion',
-    text: '',
-    font: 'Arial', pos: [0, 0.28], draggable: false, height: 0.038, wrapWidth: 1.3,
-    languageStyle: 'LTR', color: new util.Color('yellow'), depth: -1.0
-  });
-  imcTargetText = new visual.TextStim({
-    win: psychoJS.window, name: 'imcTargetText', text: '',
-    font: 'Arial', pos: [0, 0.14], draggable: false, height: 0.048, wrapWidth: 1.3,
-    languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
-  });
-  imcWarningText2 = new visual.TextStim({
-    win: psychoJS.window, name: 'imcWarningText2', text: 'Please respond before 8 seconds',
-    font: 'Arial', pos: [0, 0], draggable: false, height: 0.04,
-    languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -3.0
-  });
+      win: psychoJS.window, name: 'imcQuestion',
+      text: '',
+      font: 'Arial', pos: [0, -0.22], draggable: false, height: 0.035, wrapWidth: 1.3,
+      languageStyle: 'LTR', color: new util.Color('white'), depth: -1.0
+    });
+    imcTargetText = new visual.TextStim({
+      win: psychoJS.window, name: 'imcTargetText', text: '',
+      font: 'Arial', pos: [0, -0.26], draggable: false, height: 0.028, wrapWidth: 1.3,
+      languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
+    });
+    imcWarningText2 = new visual.TextStim({
+      win: psychoJS.window, name: 'imcWarningText2', text: 'Please respond before 8 seconds',
+      font: 'Arial', pos: [0, 0], draggable: false, height: 0.04,
+      languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -3.0
+    });
   imcNormalDelay = 0.5;  imcWarningDelay = 1.5;
 
   // ── Thanks ───────────────────────────────────────────────────────────────
@@ -1015,11 +1015,8 @@ function memoryTrialRoutineBegin(snapshot) {
       productImage.opacity = 1.0;
 
       // IMC instruction text
-      imcQuestion.text =
-        "ATTENTION CHECK\n\n" +
-        "Although you see a product image, please ignore the image and do not rate it.\n\n" +
-        "Instead, move the slider to " + imc_target_val + " and click to continue.";
-      imcTargetText.text = "Target value: " + imc_target_val;
+      imcQuestion.text = "ATTENTION check: IGNORE THE IMAGE. Move the slider to " + imc_target_val + " and click to continue.";
+      imcTargetText.text = "";
 
       // Reset mouse / slider state
       ratingMouse.x = []; ratingMouse.y = []; ratingMouse.leftButton = [];
