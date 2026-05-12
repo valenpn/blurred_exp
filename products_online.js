@@ -1260,7 +1260,7 @@ async function quitPsychoJS(message, isCompleted) {
     psychoJS.window.close();
     psychoJS.quit({ message, isCompleted });
     if (isCompleted) {
-      window.location.href = "https://app.prolific.com/submissions/complete?cc=C1H2QHGU";
+      window.location.href = "https://app.prolific.com/submissions/complete?cc=C1MGMEAC";
     }
     return Scheduler.Event.QUIT;
   
