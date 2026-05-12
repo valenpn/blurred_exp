@@ -297,7 +297,7 @@ async function experimentInit() {
   imcQuestion = new visual.TextStim({
       win: psychoJS.window, name: 'imcQuestion',
       text: '',
-      font: 'Arial', pos: [0, -0.22], draggable: false, height: 0.035, wrapWidth: 1.3,
+      font: 'Arial', pos: [0, -0.20], draggable: false, height: 0.030, wrapWidth: 1.3,
       languageStyle: 'LTR', color: new util.Color('white'), depth: -1.0
     });
     imcTargetText = new visual.TextStim({
