@@ -119,6 +119,7 @@ async function updateInfo() {
   expInfo['date'] = util.MonotonicClock.getDateStr();
   expInfo['expName'] = expName;
   expInfo['psychopyVersion'] = '2026.1.1';
+  expInfo['experiment_start_time'] = new Date().toISOString();
   expInfo['OS'] = window.navigator.platform;
   expInfo['frameRate'] = psychoJS.window.getActualFrameRate();
   if (typeof expInfo['frameRate'] !== 'undefined')
@@ -162,7 +163,7 @@ var imcTrialMaxDurationReached, imcTrialMaxDuration, imcTrialComponents;
 var imcQuestionClock, imcDelayClock;
 var imcWaitingNext, imcTimeoutWarning, imcNormalDelay, imcWarningDelay;
 var rowsForUpload = [];
-var DATAPIPE_EXPERIMENT_ID = "WxmPsuMHvMeP";
+var DATAPIPE_EXPERIMENT_ID = "mCWuRoDMxrar";
 var questions_list, trial_ratings, trial_rts, trial_init, gotValidClick;
 var ratingTrialMaxDuration, ratingTrialComponents;
 var current_val, prevButtonState, _mouseButtons, _mouseXYs;
@@ -1239,14 +1240,17 @@ async function uploadToDataPipe(csvText, filename) {
 }
 function makeUploadFilename() {
   const pid = expInfo["PROLIFIC_PID"] || "noID";
-  const dateStr = (expInfo["date"] || "nodate").split("_")[0];
-  const rand = Math.random().toString(36).slice(2, 10);
-  return `${pid}_${dateStr}_${rand}.csv`;
+  const isoTime = new Date().toISOString().replace(/[:.]/g, "-");
+  return `${pid}_${isoTime}.csv`;
 }
 async function quitPsychoJS(message, isCompleted) {
   if (psychoJS.experiment.isEntryEmpty()) psychoJS.experiment.nextEntry();
   document.body.innerHTML = `<div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:28px;color:white;background:black;height:100vh;">Saving your data...<br><br>Please do not close this page.</div>`;
   try {
+    psychoJS.experiment.addData('experiment_end_time', new Date().toISOString());
+    psychoJS.experiment.addData('experiment_start_time', expInfo['experiment_start_time'] || "");
+    psychoJS.experiment.addData('prolific_pid', expInfo['PROLIFIC_PID'] || "");
+    
     const rows = psychoJS.experiment._trialsData || [];
     if (!rows.length) throw new Error("No experiment rows found to upload.");
     const columns = [...new Set(rows.flatMap(row => Object.keys(row)))];
