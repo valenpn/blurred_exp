@@ -1,8 +1,9 @@
 /************************ 
- * Products_Online v2    *
- * - Random image version per product per block
- * - Each product×version is rated with each question exactly once
- * - One memory catch question per block
+ * Products_Online v3    *
+ * - Clean (non-blurred) images                              *
+ * - Image shown for 1500 ms, then black screen for rating  *
+ * - One question per trial, 5 s time limit                 *
+ * - One IMC catch question per block                       *
  ************************/
 
 import { core, data, sound, util, visual, hardware } from './lib/psychojs-2026.1.1.js';
@@ -66,46 +67,46 @@ psychoJS.start({
   expName: expName,
   expInfo: expInfo,
   resources: [
-    {'name': 'image_table_blurred.csv', 'path': 'image_table_blurred.csv'},
-    {'name': 'images/blurred_Belvita_original.png',          'path': 'images/blurred_Belvita_original.png'},
-    {'name': 'images/blurred_Belvita_taste.png',             'path': 'images/blurred_Belvita_taste.png'},
-    {'name': 'images/blurred_Belvita_health.png',            'path': 'images/blurred_Belvita_health.png'},
-    {'name': 'images/blurred_Chips_Ahoy!_original.png',      'path': 'images/blurred_Chips_Ahoy!_original.png'},
-    {'name': 'images/blurred_Chips_Ahoy!_taste.png',         'path': 'images/blurred_Chips_Ahoy!_taste.png'},
-    {'name': 'images/blurred_Chips_Ahoy!_health.png',        'path': 'images/blurred_Chips_Ahoy!_health.png'},
-    {'name': 'images/blurred_Goldfish_original.png',         'path': 'images/blurred_Goldfish_original.png'},
-    {'name': 'images/blurred_Goldfish_taste.png',            'path': 'images/blurred_Goldfish_taste.png'},
-    {'name': 'images/blurred_Goldfish_health.png',           'path': 'images/blurred_Goldfish_health.png'},
-    {'name': 'images/blurred_KIND_original.png',             'path': 'images/blurred_KIND_original.png'},
-    {'name': 'images/blurred_KIND_taste.png',                'path': 'images/blurred_KIND_taste.png'},
-    {'name': 'images/blurred_KIND_health.png',               'path': 'images/blurred_KIND_health.png'},
-    {'name': 'images/blurred_Lindt_original.png',            'path': 'images/blurred_Lindt_original.png'},
-    {'name': 'images/blurred_Lindt_taste.png',               'path': 'images/blurred_Lindt_taste.png'},
-    {'name': 'images/blurred_Lindt_health.png',              'path': 'images/blurred_Lindt_health.png'},
-    {'name': 'images/blurred_Lipton_Tea_original.png',       'path': 'images/blurred_Lipton_Tea_original.png'},
-    {'name': 'images/blurred_Lipton_Tea_taste.png',          'path': 'images/blurred_Lipton_Tea_taste.png'},
-    {'name': 'images/blurred_Lipton_Tea_health.png',         'path': 'images/blurred_Lipton_Tea_health.png'},
-    {'name': 'images/blurred_Nature_Valley_original.png',    'path': 'images/blurred_Nature_Valley_original.png'},
-    {'name': 'images/blurred_Nature_Valley_taste.png',       'path': 'images/blurred_Nature_Valley_taste.png'},
-    {'name': 'images/blurred_Nature_Valley_health.png',      'path': 'images/blurred_Nature_Valley_health.png'},
-    {'name': 'images/blurred_PLANTERS_Cashews_original.png', 'path': 'images/blurred_PLANTERS_Cashews_original.png'},
-    {'name': 'images/blurred_PLANTERS_Cashews_taste.png',    'path': 'images/blurred_PLANTERS_Cashews_taste.png'},
-    {'name': 'images/blurred_PLANTERS_Cashews_health.png',   'path': 'images/blurred_PLANTERS_Cashews_health.png'},
-    {'name': 'images/blurred_Pocky_original.png',            'path': 'images/blurred_Pocky_original.png'},
-    {'name': 'images/blurred_Pocky_taste.png',               'path': 'images/blurred_Pocky_taste.png'},
-    {'name': 'images/blurred_Pocky_health.png',              'path': 'images/blurred_Pocky_health.png'},
-    {'name': 'images/blurred_Pringles_original.png',         'path': 'images/blurred_Pringles_original.png'},
-    {'name': 'images/blurred_Pringles_taste.png',            'path': 'images/blurred_Pringles_taste.png'},
-    {'name': 'images/blurred_Pringles_health.png',           'path': 'images/blurred_Pringles_health.png'},
-    {'name': 'images/blurred_RitterSport_original.png',      'path': 'images/blurred_RitterSport_original.png'},
-    {'name': 'images/blurred_RitterSport_taste.png',         'path': 'images/blurred_RitterSport_taste.png'},
-    {'name': 'images/blurred_RitterSport_health.png',        'path': 'images/blurred_RitterSport_health.png'},
-    {'name': 'images/blurred_TERRA_chips_original.png',      'path': 'images/blurred_TERRA_chips_original.png'},
-    {'name': 'images/blurred_TERRA_chips_taste.png',         'path': 'images/blurred_TERRA_chips_taste.png'},
-    {'name': 'images/blurred_TERRA_chips_health.png',        'path': 'images/blurred_TERRA_chips_health.png'},
-    {'name': 'images/blurred_Twix_original.png',             'path': 'images/blurred_Twix_original.png'},
-    {'name': 'images/blurred_Twix_taste.png',                'path': 'images/blurred_Twix_taste.png'},
-    {'name': 'images/blurred_Twix_health.png',               'path': 'images/blurred_Twix_health.png'},
+    {'name': 'image_table.csv', 'path': 'image_table.csv'},
+    {'name': 'taste&health/Belvita_original.png',          'path': 'taste&health/Belvita_original.png'},
+    {'name': 'taste&health/Belvita_taste.png',             'path': 'taste&health/Belvita_taste.png'},
+    {'name': 'taste&health/Belvita_health.png',            'path': 'taste&health/Belvita_health.png'},
+    {'name': 'taste&health/Chips_Ahoy!_original.png',      'path': 'taste&health/Chips_Ahoy!_original.png'},
+    {'name': 'taste&health/Chips_Ahoy!_taste.png',         'path': 'taste&health/Chips_Ahoy!_taste.png'},
+    {'name': 'taste&health/Chips_Ahoy!_health.png',        'path': 'taste&health/Chips_Ahoy!_health.png'},
+    {'name': 'taste&health/Goldfish_original.png',         'path': 'taste&health/Goldfish_original.png'},
+    {'name': 'taste&health/Goldfish_taste.png',            'path': 'taste&health/Goldfish_taste.png'},
+    {'name': 'taste&health/Goldfish_health.png',           'path': 'taste&health/Goldfish_health.png'},
+    {'name': 'taste&health/KIND_original.png',             'path': 'taste&health/KIND_original.png'},
+    {'name': 'taste&health/KIND_taste.png',                'path': 'taste&health/KIND_taste.png'},
+    {'name': 'taste&health/KIND_health.png',               'path': 'taste&health/KIND_health.png'},
+    {'name': 'taste&health/Lindt_original.png',            'path': 'taste&health/Lindt_original.png'},
+    {'name': 'taste&health/Lindt_taste.png',               'path': 'taste&health/Lindt_taste.png'},
+    {'name': 'taste&health/Lindt_health.png',              'path': 'taste&health/Lindt_health.png'},
+    {'name': 'taste&health/Lipton_Tea_original.png',       'path': 'taste&health/Lipton_Tea_original.png'},
+    {'name': 'taste&health/Lipton_Tea_taste.png',          'path': 'taste&health/Lipton_Tea_taste.png'},
+    {'name': 'taste&health/Lipton_Tea_health.png',         'path': 'taste&health/Lipton_Tea_health.png'},
+    {'name': 'taste&health/Nature_Valley_original.png',    'path': 'taste&health/Nature_Valley_original.png'},
+    {'name': 'taste&health/Nature_Valley_taste.png',       'path': 'taste&health/Nature_Valley_taste.png'},
+    {'name': 'taste&health/Nature_Valley_health.png',      'path': 'taste&health/Nature_Valley_health.png'},
+    {'name': 'taste&health/PLANTERS_Cashews_original.png', 'path': 'taste&health/PLANTERS_Cashews_original.png'},
+    {'name': 'taste&health/PLANTERS_Cashews_taste.png',    'path': 'taste&health/PLANTERS_Cashews_taste.png'},
+    {'name': 'taste&health/PLANTERS_Cashews_health.png',   'path': 'taste&health/PLANTERS_Cashews_health.png'},
+    {'name': 'taste&health/Pocky_original.png',            'path': 'taste&health/Pocky_original.png'},
+    {'name': 'taste&health/Pocky_taste.png',               'path': 'taste&health/Pocky_taste.png'},
+    {'name': 'taste&health/Pocky_health.png',              'path': 'taste&health/Pocky_health.png'},
+    {'name': 'taste&health/Pringles_original.png',         'path': 'taste&health/Pringles_original.png'},
+    {'name': 'taste&health/Pringles_taste.png',            'path': 'taste&health/Pringles_taste.png'},
+    {'name': 'taste&health/Pringles_health.png',           'path': 'taste&health/Pringles_health.png'},
+    {'name': 'taste&health/RitterSport_original.png',      'path': 'taste&health/RitterSport_original.png'},
+    {'name': 'taste&health/RitterSport_taste.png',         'path': 'taste&health/RitterSport_taste.png'},
+    {'name': 'taste&health/RitterSport_health.png',        'path': 'taste&health/RitterSport_health.png'},
+    {'name': 'taste&health/TERRA_chips_original.png',      'path': 'taste&health/TERRA_chips_original.png'},
+    {'name': 'taste&health/TERRA_chips_taste.png',         'path': 'taste&health/TERRA_chips_taste.png'},
+    {'name': 'taste&health/TERRA_chips_health.png',        'path': 'taste&health/TERRA_chips_health.png'},
+    {'name': 'taste&health/Twix_original.png',             'path': 'taste&health/Twix_original.png'},
+    {'name': 'taste&health/Twix_taste.png',                'path': 'taste&health/Twix_taste.png'},
+    {'name': 'taste&health/Twix_health.png',               'path': 'taste&health/Twix_health.png'},
     {'name': 'default.png', 'path': 'https://pavlovia.org/assets/default/default.png'},
   ]
 });
@@ -142,8 +143,12 @@ var instructionsClock, text_instructions, key_resp_instructions;
 var setOrderClock;
 var fixationClock, text_fixation;
 var ratingTrialClock;
-var TTIME_LIMIT, all_questions, SLIDER_MIN, SLIDER_MAX, SLIDER_WIDTH, SLIDER_Y;
-var questionClock, delayClock;
+// IMAGE_EXPOSURE_DURATION: how long the product image is shown (ms → s)
+var IMAGE_EXPOSURE_DURATION = 1.5;   // 1500 ms
+// TTIME_LIMIT: how long the participant has to respond on the black screen
+var TTIME_LIMIT = 5.0;               // 5 000 ms
+var all_questions, SLIDER_MIN, SLIDER_MAX, SLIDER_WIDTH, SLIDER_Y;
+var questionClock, delayClock, exposureClock;
 var waiting_next_question, timeout_warning, click_ready, question_index, current_x;
 var delay_duration, normal_delay, warning_delay;
 var productImage, questionText, ratingValueText;
@@ -162,6 +167,8 @@ var blockIntroMaxDurationReached, _blockIntroKey_allKeys, blockIntroMaxDuration,
 var imcTrialMaxDurationReached, imcTrialMaxDuration, imcTrialComponents;
 var imcQuestionClock, imcDelayClock;
 var imcWaitingNext, imcTimeoutWarning, imcNormalDelay, imcWarningDelay;
+// imageExposurePhase: true = showing image, false = black-screen rating phase
+var imageExposurePhase;
 var rowsForUpload = [];
 var DATAPIPE_EXPERIMENT_ID = "mCWuRoDMxrar";
 var questions_list, trial_ratings, trial_rts, trial_init, gotValidClick;
@@ -183,7 +190,7 @@ async function experimentInit() {
   instructionsClock = new util.Clock();
   text_instructions = new visual.TextStim({
     win: psychoJS.window, name: 'text_instructions',
-    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nRate each product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 8 seconds for each product.\n\nPress SPACE to begin the experiment',
+    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nEach product image will appear briefly.\nThen a black screen will appear — rate the product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 5 seconds to respond.\n\nPress SPACE to begin the experiment',
     font: 'Arial', pos: [0, 0], draggable: false, height: 0.035, wrapWidth: 1.3,
     languageStyle: 'LTR', color: new util.Color('white'), depth: 0.0
   });
@@ -212,18 +219,19 @@ async function experimentInit() {
 
   // ── Rating trial ─────────────────────────────────────────────────────────
   ratingTrialClock = new util.Clock();
-  TTIME_LIMIT = 8;
   all_questions = [
     ["liking", "How much do you LIKE the product?"],
     ["taste",  "How TASTY do you think the product is?"],
     ["health", "How HEALTHY do you think the product is?"]
   ];
   SLIDER_MIN = 0; SLIDER_MAX = 7; SLIDER_WIDTH = 0.72; SLIDER_Y = -0.33;
-  questionClock = new util.Clock();
-  delayClock    = new util.Clock();
+  questionClock  = new util.Clock();
+  delayClock     = new util.Clock();
+  exposureClock  = new util.Clock();   // times the image-exposure phase
   waiting_next_question = false; timeout_warning = false; click_ready = false;
   question_index = 0; current_x = 0;
   delay_duration = 0.5; normal_delay = 0.5; warning_delay = 1.5;
+  imageExposurePhase = true;
 
   productImage = new visual.ImageStim({
     win: psychoJS.window, name: 'productImage',
@@ -283,7 +291,7 @@ async function experimentInit() {
     languageStyle: 'LTR', color: new util.Color('white'), depth: -8.0
   });
   warningText = new visual.TextStim({
-    win: psychoJS.window, name: 'warningText', text: 'Please answer before 8 seconds',
+    win: psychoJS.window, name: 'warningText', text: 'Please answer before 5 seconds',
     font: 'Arial', pos: [0, 0], draggable: false, height: 0.05,
     languageStyle: 'LTR', color: new util.Color('red'), depth: -9.0
   });
@@ -306,7 +314,7 @@ async function experimentInit() {
       languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
     });
     imcWarningText2 = new visual.TextStim({
-      win: psychoJS.window, name: 'imcWarningText2', text: 'Please respond before 8 seconds',
+      win: psychoJS.window, name: 'imcWarningText2', text: 'Please respond before 5 seconds',
       font: 'Arial', pos: [0, 0], draggable: false, height: 0.04,
       languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -3.0
     });
@@ -466,25 +474,6 @@ function instructionsRoutineEnd(snapshot) {
 
   Constraint: over the full experiment every (product × version) cell is
   rated with every question exactly once.
-
-  Implementation
-  ──────────────
-  1.  For each product, randomly generate a 3×3 Latin-square that maps
-      question → version.  Concretely: generate a random permutation of
-      [0,1,2] for each question type (so the same version is never repeated
-      for a given question across blocks).
-
-  2.  9 blocks are arranged as 3 "rounds" × 3 question-types.
-      - Round r (0-indexed), question q → use version assignment[q][r]
-      - Within each block, the 13 products are shuffled.
-
-  3.  Within each block, one trial is randomly selected as the memory-catch
-      position (never the very first trial of the block to avoid it firing
-      right after the intro).
-
-  Trial object fields (compatible with the rest of the routines):
-    product_id, image_path, block_num (1-9), block_question,
-    block_image_version, is_last_trial_in_block, is_imc_trial_position
 */
 var setOrderMaxDurationReached, setOrderMaxDuration, setOrderComponents;
 
@@ -496,43 +485,28 @@ function setOrderRoutineBegin(snapshot) {
 
     const VERSIONS   = ["original", "taste", "health"];
     const QUESTIONS  = ["liking", "taste", "health"];
-    const BASE_PATH  = "images/blurred_";
+    const BASE_PATH  = "taste&health/";   // ← no blurred_ prefix
 
-    // Per-product Latin square: for each question, which version to use in rounds 0,1,2
-    // We build a 3×3 matrix where rows = questions, cols = rounds,
-    // and every column is a permutation of VERSIONS.
-    // Strategy: generate one random permutation of versions for round 0,
-    //   rotate +1 for round 1, +2 for round 2 → guarantees no question
-    //   repeats the same version AND each version appears once per question.
     function makeProductAssignment() {
-      // assignment[question_idx][round_idx] = version_idx
-      // Start with a random column-0, then derive columns 1 and 2 by rotation.
-      let col0 = shuffleArray([0, 1, 2]);           // random permutation for round 0
+      let col0 = shuffleArray([0, 1, 2]);
       let assignment = QUESTIONS.map((_, qi) => [
         col0[qi],
         (col0[qi] + 1) % 3,
         (col0[qi] + 2) % 3
       ]);
-      return assignment;  // [3][3]
+      return assignment;
     }
 
-    // Build per-product assignment maps
-    // productAssignments[product] = 3×3 matrix (see above)
     let productAssignments = {};
     for (const prod of all_products) {
       productAssignments[prod] = makeProductAssignment();
     }
 
-    // Build 9 blocks: round 0..2 × question 0..2
     selected_trials = [];
     block_plan = [];
-    let global_block_num = 1;
 
-    // IMC target values cycle through [6, 2, 4] across the 9 blocks.
-    // This gives 3 checks at each value, spread across the experiment.
     const IMC_TARGETS = [6, 2, 4, 6, 2, 4, 6, 2, 4];
 
-    // First pass: build the ordered list of 9 blocks
     let ordered_blocks = [];
     for (let round = 0; round < 3; round++) {
       let round_blocks = QUESTIONS.map((q, qi) => ({
@@ -543,29 +517,22 @@ function setOrderRoutineBegin(snapshot) {
       round_blocks = shuffleArray(round_blocks);
       for (const b of round_blocks) ordered_blocks.push(b);
     }
-    // Assign block numbers and IMC targets
     for (let bi = 0; bi < ordered_blocks.length; bi++) {
       ordered_blocks[bi].block_num = bi + 1;
       ordered_blocks[bi].imc_target = IMC_TARGETS[bi];
       block_plan.push(ordered_blocks[bi]);
     }
 
-    // Second pass: build trials
     for (const block of ordered_blocks) {
-      global_block_num = block.block_num;
       let imc_target = block.imc_target;
-
-      // Shuffle products for this block
       let shuffled_products = shuffleArray(all_products);
-
-      // Find a position for the IMC catch (not at index 0 — too close to block intro).
-      // Pick a random position from index 1 onwards.
       let imc_idx = 1 + Math.floor(Math.random() * (shuffled_products.length - 1));
 
       for (let pi = 0; pi < shuffled_products.length; pi++) {
         let prod = shuffled_products[pi];
         let version_idx = productAssignments[prod][block.question_idx][block.round];
         let version_name = VERSIONS[version_idx];
+        // Clean image path — no blurred_ prefix
         let img_path = `${BASE_PATH}${prod}_${version_name}.png`;
 
         selected_trials.push({
@@ -576,9 +543,8 @@ function setOrderRoutineBegin(snapshot) {
           block_question:           block.block_question,
           round:                    block.round,
           is_last_trial_in_block:   (pi === shuffled_products.length - 1) ? 1 : 0,
-          // IMC catch fires at the designated position
           is_imc_trial_position:    (pi === imc_idx) ? 1 : 0,
-          imc_target:               imc_target   // stored for every trial in the block for reference
+          imc_target:               imc_target
         });
       }
     }
@@ -616,7 +582,6 @@ function blockIntroRoutineBegin(snapshot) {
     t = 0; frameN = -1; continueRoutine = true; routineForceEnded = false;
     blockIntroClock.reset(); routineTimer.reset(); blockIntroMaxDurationReached = false;
 
-    // Safety net
     const _bi = snapshot.getCurrentTrial ? snapshot.getCurrentTrial() : {};
     if (typeof block_num === 'undefined' || block_num === null) block_num = _bi.block_num || 0;
     if (typeof block_question === 'undefined' || block_question === null) block_question = _bi.block_question || '';
@@ -697,7 +662,6 @@ function main_loopLoopBegin(main_loopLoopScheduler, snapshot) {
     psychoJS.experiment.addLoop(main_loop);
     currentLoop = main_loop;
     for (const thisMain_loop of main_loop) {
-      // Capture snapshot in block-scoped const to avoid closure-over-loop-variable bug
       const trialSnapshot = main_loop.getSnapshot();
       main_loopLoopScheduler.add(importConditions(trialSnapshot));
       main_loopLoopScheduler.add(blockIntroRoutineBegin(trialSnapshot));
@@ -787,6 +751,16 @@ function fixationRoutineEnd(snapshot) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  RATING TRIAL
+//
+//  Phase 1 — Image exposure (IMAGE_EXPOSURE_DURATION = 1.5 s)
+//    • Product image is visible, centred on screen
+//    • No question text, no slider visible
+//
+//  Phase 2 — Black-screen rating (TTIME_LIMIT = 5.0 s)
+//    • Image hidden (opacity 0), black background
+//    • Question text + slider appear
+//    • Participant clicks to confirm rating
+//    • If time runs out → warning text → move on (warning_delay = 1.5 s)
 // ═══════════════════════════════════════════════════════════════════════════
 function ratingTrialRoutineBegin(snapshot) {
   return async function () {
@@ -794,8 +768,6 @@ function ratingTrialRoutineBegin(snapshot) {
     t = 0; frameN = -1; continueRoutine = true; routineForceEnded = false;
     ratingTrialClock.reset(); routineTimer.reset(); ratingTrialMaxDuration = false;
 
-    // Directly read trial fields from the current trial object as a safety net,
-    // in case importAttributes did not set globals yet.
     const _trial = snapshot.getCurrentTrial ? snapshot.getCurrentTrial() : {};
     if (typeof image_path === 'undefined' || image_path === null || image_path === '')
       image_path = _trial.image_path || 'default.png';
@@ -817,24 +789,33 @@ function ratingTrialRoutineBegin(snapshot) {
     document.body.style.cursor = 'none';
 
     question_index = 0; trial_ratings = {}; trial_rts = {}; trial_init = {};
-    questionText.text = questions_list[0][1];
-    sliderCover.opacity = 0.0; warningText.opacity = 0.0; productImage.opacity = 1.0;
-    leftAnchor.text = "Not at all"; rightAnchor.text = "Very much";
 
+    // Initialise slider to a random position
     let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
     current_x = start_x;
     let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
     init_val = Math.min(Math.max(parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
-    ratingValueText.text = "Rating: " + init_val.toFixed(1);
     sliderMarker.setPos([current_x, SLIDER_Y]);
     trial_init[questions_list[0][0]] = init_val;
 
+    // Start in image-exposure phase
+    imageExposurePhase = true;
+    exposureClock.reset();
+
+    // Hide rating UI at start; image visible
+    productImage.opacity = 1.0;
+    questionText.text = "";
+    ratingValueText.text = "";
+    leftAnchor.text = "";
+    rightAnchor.text = "";
+    sliderCover.opacity = 1.0;   // covers slider during exposure phase
+    warningText.opacity = 0.0;
+
     waiting_next_question = false; timeout_warning = false; click_ready = false;
     questionClock.reset(); delayClock.reset();
-    // Guard: ensure image_path is a valid string before setting
+
     const safe_image_path = (typeof image_path === 'string' && image_path.length > 0)
-      ? image_path
-      : 'default.png';
+      ? image_path : 'default.png';
     productImage.setImage(safe_image_path);
 
     ratingMouse.x = []; ratingMouse.y = []; ratingMouse.leftButton = [];
@@ -859,7 +840,58 @@ function ratingTrialRoutineBegin(snapshot) {
 function ratingTrialRoutineEachFrame() {
   return async function () {
     t = ratingTrialClock.getTime(); frameN++;
-    let mousePos = ratingMouse.getPos();
+
+    // ── Phase 1: Image exposure ──────────────────────────────────────────
+    if (imageExposurePhase) {
+      // Show only the image; keep rating UI hidden
+      productImage.opacity = 1.0;
+      questionText.text    = "";
+      ratingValueText.text = "";
+      leftAnchor.text      = "";
+      rightAnchor.text     = "";
+      sliderCover.opacity  = 1.0;
+      warningText.opacity  = 0.0;
+
+      if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
+        // Transition to rating phase
+        imageExposurePhase = false;
+        productImage.opacity = 0.0;   // hide image → black screen
+        questionText.text    = questions_list[0][1];
+        ratingValueText.text = "Rating: " + (
+          ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
+        ).toFixed(1);
+        leftAnchor.text  = "Not at all";
+        rightAnchor.text = "Very much";
+        sliderCover.opacity = 0.0;
+        questionClock.reset();   // start 5 s countdown from transition
+        // Ignore any mouse clicks that might have accumulated during exposure
+        click_ready = false;
+      }
+
+      // Auto-draw
+      const drawAll = [
+        productImage, questionText, ratingValueText, sliderLine, sliderMarker,
+        ...sliderTicks, sliderCover, leftAnchor, rightAnchor, warningText
+      ];
+      for (const c of drawAll) {
+        if (t >= 0.0 && c.status === PsychoJS.Status.NOT_STARTED) {
+          c.tStart = t; c.frameNStart = frameN; c.setAutoDraw(true);
+        }
+      }
+      if (t >= 0.0 && ratingMouse.status === PsychoJS.Status.NOT_STARTED) {
+        ratingMouse.tStart = t; ratingMouse.frameNStart = frameN;
+        ratingMouse.status = PsychoJS.Status.STARTED;
+        ratingMouse.mouseClock.reset(); prevButtonState = ratingMouse.getPressed();
+      }
+
+      if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
+        return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
+
+      return Scheduler.Event.FLIP_REPEAT;   // stay in frame loop
+    }
+
+    // ── Phase 2: Black-screen rating ────────────────────────────────────
+    let mousePos     = ratingMouse.getPos();
     let mouse_pressed = ratingMouse.getPressed()[0] === 1;
     if (!mouse_pressed) click_ready = true;
     if (mousePos && Math.abs(mousePos[0]) > 0.001) current_x = mousePos[0];
@@ -868,18 +900,31 @@ function ratingTrialRoutineEachFrame() {
     cv = Math.min(Math.max(parseFloat(cv.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
 
     if (waiting_next_question) {
-      productImage.opacity = 0.0; questionText.text = ""; ratingValueText.text = "";
-      leftAnchor.text = ""; rightAnchor.text = ""; sliderCover.opacity = 1.0;
-      if (timeout_warning) { warningText.text = "Please answer before 8 seconds"; warningText.opacity = 1.0; }
-      else warningText.opacity = 0.0;
+      // Post-response / post-timeout delay
+      productImage.opacity = 0.0;
+      questionText.text    = "";
+      ratingValueText.text = "";
+      leftAnchor.text      = "";
+      rightAnchor.text     = "";
+      sliderCover.opacity  = 1.0;
+      if (timeout_warning) {
+        warningText.text    = "Please answer before 5 seconds";
+        warningText.opacity = 1.0;
+      } else {
+        warningText.opacity = 0.0;
+      }
       if (delayClock.getTime() >= delay_duration) {
         if (question_index >= questions_list.length) {
           continueRoutine = false;
         } else {
+          // (single-question design: this branch is unused, but kept for safety)
           waiting_next_question = false; timeout_warning = false;
-          productImage.opacity = 1.0; warningText.opacity = 0.0; sliderCover.opacity = 0.0;
-          leftAnchor.text = "Not at all"; rightAnchor.text = "Very much";
-          questionText.text = questions_list[question_index][1];
+          productImage.opacity = 0.0;
+          warningText.opacity  = 0.0;
+          sliderCover.opacity  = 0.0;
+          leftAnchor.text  = "Not at all";
+          rightAnchor.text = "Very much";
+          questionText.text    = questions_list[question_index][1];
           current_x = (((cv - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
           sliderMarker.setPos([current_x, SLIDER_Y]);
           ratingValueText.text = "Rating: " + cv.toFixed(1);
@@ -888,10 +933,17 @@ function ratingTrialRoutineEachFrame() {
         }
       }
     } else {
-      sliderCover.opacity = 0.0; warningText.opacity = 0.0; productImage.opacity = 1.0;
-      leftAnchor.text = "Not at all"; rightAnchor.text = "Very much";
-      sliderMarker.setPos([current_x, SLIDER_Y]); ratingValueText.text = "Rating: " + cv.toFixed(1);
+      // Active rating phase
+      productImage.opacity = 0.0;      // black screen — no image
+      sliderCover.opacity  = 0.0;
+      warningText.opacity  = 0.0;
+      leftAnchor.text      = "Not at all";
+      rightAnchor.text     = "Very much";
+      sliderMarker.setPos([current_x, SLIDER_Y]);
+      ratingValueText.text = "Rating: " + cv.toFixed(1);
+
       if (questionClock.getTime() >= TTIME_LIMIT) {
+        // Timeout
         let q_name = questions_list[question_index][0];
         trial_ratings[q_name] = null; trial_rts[q_name] = null;
         timeout_warning = true; delay_duration = warning_delay;
@@ -966,9 +1018,9 @@ function ratingTrialRoutineEnd(snapshot) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  IMC (ATTENTION CHECK) TRIAL
-//  Fires once per block at the designated position.
-//  Shows a blurred product image + instruction to move the slider to a
-//  specific numeric target.  Pass criterion: |response − target| ≤ 0.2.
+//  Same two-phase structure:
+//    Phase 1 — product image shown for 1500 ms
+//    Phase 2 — black screen with instruction to move slider to target value
 // ═══════════════════════════════════════════════════════════════════════════
 var imcTrialMaxDurationReached;
 function memoryTrialRoutineBegin(snapshot) {
@@ -978,7 +1030,6 @@ function memoryTrialRoutineBegin(snapshot) {
     imcTrialClock = new util.Clock(); imcTrialClock.reset();
     routineTimer.reset(); imcTrialMaxDurationReached = false;
 
-    // Safety net: read directly from trial object if globals not set
     const _mt = snapshot.getCurrentTrial ? snapshot.getCurrentTrial() : {};
     if (typeof is_imc_trial_position === 'undefined' || is_imc_trial_position === null)
       is_imc_trial_position = _mt.is_imc_trial_position || 0;
@@ -989,7 +1040,6 @@ function memoryTrialRoutineBegin(snapshot) {
     if (typeof image_path === 'undefined' || image_path === null)
       image_path = _mt.image_path || 'default.png';
 
-    // show IMC only at the designated position
     show_imc = (is_imc_trial_position === 1);
     imc_target_val = imc_target;
     imc_slider_response = null;
@@ -1000,7 +1050,7 @@ function memoryTrialRoutineBegin(snapshot) {
     } else {
       document.body.style.cursor = 'none';
 
-      // Reset slider to a random starting position (same as rating trials)
+      // Random slider start
       let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
       current_x = start_x;
       let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
@@ -1008,27 +1058,29 @@ function memoryTrialRoutineBegin(snapshot) {
       sliderMarker.setPos([current_x, SLIDER_Y]);
       ratingValueText.text = "Rating: " + init_val.toFixed(1);
 
-      // Set the blurred product image (same image as this trial's rating)
       const safe_imc_image = (typeof image_path === 'string' && image_path.length > 0)
         ? image_path : 'default.png';
       productImage.setImage(safe_imc_image);
+
+      // Start in exposure phase
+      imageExposurePhase = true;
+      exposureClock.reset();
       productImage.opacity = 1.0;
 
-      // IMC instruction text
-      imcQuestion.text = "ATTENTION check: IGNORE THE IMAGE. Move the slider to " + imc_target_val + " and click to continue.";
-      imcTargetText.text = "";
+      // Hide rating UI initially
+      imcQuestion.text    = "";
+      imcTargetText.text  = "";
+      sliderCover.opacity = 1.0;
+      imcWarningText2.opacity = 0.0;
+      leftAnchor.text  = "";
+      rightAnchor.text = "";
 
-      // Reset mouse / slider state
       ratingMouse.x = []; ratingMouse.y = []; ratingMouse.leftButton = [];
       ratingMouse.midButton = []; ratingMouse.rightButton = []; ratingMouse.time = [];
       gotValidClick = false;
       click_ready = false;
 
-      sliderCover.opacity = 0.0;
-      imcWarningText2.opacity = 0.0;
-      leftAnchor.text = "Not at all"; rightAnchor.text = "Very much";
-
-      imcQuestionClock = new util.Clock(); imcQuestionClock.reset();
+      imcQuestionClock = new util.Clock(); // will be reset at phase transition
       imcDelayClock    = new util.Clock(); imcDelayClock.reset();
       imcWaitingNext = false; imcTimeoutWarning = false;
     }
@@ -1051,7 +1103,57 @@ function memoryTrialRoutineEachFrame() {
     t = imcTrialClock.getTime(); frameN++;
     if (!show_imc) return Scheduler.Event.NEXT;
 
-    let mousePos = ratingMouse.getPos();
+    // ── IMC Phase 1: Image exposure ──────────────────────────────────────
+    if (imageExposurePhase) {
+      productImage.opacity    = 1.0;
+      imcQuestion.text        = "";
+      imcTargetText.text      = "";
+      sliderCover.opacity     = 1.0;
+      imcWarningText2.opacity = 0.0;
+      leftAnchor.text         = "";
+      rightAnchor.text        = "";
+
+      if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
+        // Transition to IMC rating phase
+        imageExposurePhase = false;
+        productImage.opacity = 0.0;   // black screen
+        imcQuestion.text     = "ATTENTION check: IGNORE THE IMAGE. Move the slider to " + imc_target_val + " and click to continue.";
+        imcTargetText.text   = "";
+        sliderCover.opacity  = 0.0;
+        leftAnchor.text      = "Not at all";
+        rightAnchor.text     = "Very much";
+        ratingValueText.text = "Rating: " + (
+          ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
+        ).toFixed(1);
+        imcQuestionClock = new util.Clock(); imcQuestionClock.reset();
+        click_ready = false;
+      }
+
+      // Auto-draw
+      const drawAll = [
+        productImage, imcQuestion, imcTargetText, imcWarningText2,
+        ratingValueText, sliderLine, sliderMarker, ...sliderTicks,
+        sliderCover, leftAnchor, rightAnchor
+      ];
+      for (const c of drawAll) {
+        if (t >= 0.0 && c.status === PsychoJS.Status.NOT_STARTED) {
+          c.tStart = t; c.frameNStart = frameN; c.setAutoDraw(true);
+        }
+      }
+      if (t >= 0.0 && ratingMouse.status === PsychoJS.Status.NOT_STARTED) {
+        ratingMouse.tStart = t; ratingMouse.frameNStart = frameN;
+        ratingMouse.status = PsychoJS.Status.STARTED;
+        ratingMouse.mouseClock.reset(); prevButtonState = ratingMouse.getPressed();
+      }
+
+      if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
+        return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
+
+      return Scheduler.Event.FLIP_REPEAT;
+    }
+
+    // ── IMC Phase 2: Black-screen rating ────────────────────────────────
+    let mousePos      = ratingMouse.getPos();
     let mouse_pressed = ratingMouse.getPressed()[0] === 1;
     if (!mouse_pressed) click_ready = true;
     if (mousePos && Math.abs(mousePos[0]) > 0.001) current_x = mousePos[0];
@@ -1060,19 +1162,20 @@ function memoryTrialRoutineEachFrame() {
     cv = Math.min(Math.max(parseFloat(cv.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
 
     if (imcWaitingNext) {
-      sliderCover.opacity = 1.0;
+      sliderCover.opacity     = 1.0;
       imcWarningText2.opacity = imcTimeoutWarning ? 1.0 : 0.0;
       let delayNeeded = imcTimeoutWarning ? imcWarningDelay : imcNormalDelay;
       if (imcDelayClock.getTime() >= delayNeeded) {
         continueRoutine = false; routineForceEnded = true;
       }
     } else {
-      sliderCover.opacity = 0.0; imcWarningText2.opacity = 0.0;
+      productImage.opacity    = 0.0;   // keep image hidden on black screen
+      sliderCover.opacity     = 0.0;
+      imcWarningText2.opacity = 0.0;
       sliderMarker.setPos([current_x, SLIDER_Y]);
-      ratingValueText.text = "Rating: " + cv.toFixed(1);
+      ratingValueText.text    = "Rating: " + cv.toFixed(1);
 
       if (imcQuestionClock.getTime() >= TTIME_LIMIT) {
-        // Timeout — record null, show warning
         imc_slider_response = null;
         imc_pass = 0;
         imcTimeoutWarning = true; imcWaitingNext = true;
