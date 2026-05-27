@@ -190,7 +190,7 @@ async function experimentInit() {
   instructionsClock = new util.Clock();
   text_instructions = new visual.TextStim({
     win: psychoJS.window, name: 'text_instructions',
-    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nEach product image will appear briefly.\nThen a black screen will appear — rate the product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 5 seconds to respond.\n\nPress SPACE to begin the experiment',
+    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nEach product image will appear briefly.\nThen a black screen will appear \n Rate the product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 5 seconds to respond.\n\nPress SPACE to begin the experiment',
     font: 'Arial', pos: [0, 0], draggable: false, height: 0.035, wrapWidth: 1.3,
     languageStyle: 'LTR', color: new util.Color('white'), depth: 0.0
   });
@@ -224,7 +224,7 @@ async function experimentInit() {
     ["taste",  "How TASTY do you think the product is?"],
     ["health", "How HEALTHY do you think the product is?"]
   ];
-  SLIDER_MIN = 0; SLIDER_MAX = 7; SLIDER_WIDTH = 0.72; SLIDER_Y = -0.33;
+  SLIDER_MIN = 0; SLIDER_MAX = 7; SLIDER_WIDTH = 0.72; SLIDER_Y = -0.20;
   questionClock  = new util.Clock();
   delayClock     = new util.Clock();
   exposureClock  = new util.Clock();   // times the image-exposure phase
@@ -236,30 +236,30 @@ async function experimentInit() {
   productImage = new visual.ImageStim({
     win: psychoJS.window, name: 'productImage',
     image: 'default.png', mask: undefined, anchor: 'center',
-    ori: 0.0, pos: [0, 0.14], draggable: false, size: [0.6, 0.6],
+    ori: 0.0, pos: [0, 0.03], draggable: false, size: [0.6, 0.6],
     color: new util.Color([1,1,1]), flipHoriz: false, flipVert: false,
     texRes: 128.0, interpolate: true, depth: -1.0
   });
   questionText = new visual.TextStim({
     win: psychoJS.window, name: 'questionText', text: 'placeholder',
-    font: 'Arial', pos: [0, -0.22], draggable: false, height: 0.035,
+    font: 'Arial', pos: [0, -0.08], draggable: false, height: 0.035,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
   });
   ratingValueText = new visual.TextStim({
     win: psychoJS.window, name: 'ratingValueText', text: 'Rating:',
-    font: 'Arial', pos: [0, -0.26], draggable: false, height: 0.028,
+    font: 'Arial', pos: [0, -0.08], draggable: false, height: 0.028,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -3.0
   });
   sliderLine = new visual.Rect({
     win: psychoJS.window, name: 'sliderLine',
-    width: 0.72, height: 0.006, ori: 0.0, pos: [0, -0.33],
+    width: 0.72, height: 0.006, ori: 0.0, pos: [0, -0.20],
     draggable: false, anchor: 'center', lineWidth: 0,
     lineColor: new util.Color('white'), fillColor: new util.Color('white'),
     colorSpace: 'rgb', opacity: 1.0, depth: -4, interpolate: true,
   });
   sliderMarker = new visual.Polygon({
     win: psychoJS.window, name: 'sliderMarker', edges: 64,
-    size: [0.02, 0.02], ori: 0.0, pos: [0, -0.33], draggable: false, anchor: 'center',
+    size: [0.02, 0.02], ori: 0.0, pos: [0, -0.20], draggable: false, anchor: 'center',
     lineWidth: 1.0, lineColor: new util.Color('white'), fillColor: new util.Color('white'),
     colorSpace: 'rgb', opacity: 1.0, depth: -3.5, interpolate: true,
   });
@@ -268,13 +268,13 @@ async function experimentInit() {
     let xPos = -0.36 + (i / 7) * 0.72;
     sliderTicks.push(new visual.TextStim({
       win: psychoJS.window, name: `sliderTick_${i}`, text: String(i),
-      font: 'Arial', pos: [xPos, -0.38], draggable: false, height: 0.025,
+      font: 'Arial', pos: [xPos, -0.25], draggable: false, height: 0.025,
       languageStyle: 'LTR', color: new util.Color('white'), opacity: 1.0, depth: -4.2
     }));
   }
   sliderCover = new visual.Rect({
     win: psychoJS.window, name: 'sliderCover',
-    width: 0.8, height: 0.18, ori: 0.0, pos: [0, -0.36], draggable: false, anchor: 'center',
+    width: 0.8, height: 0.18, ori: 0.0, pos: [0, -0.22], draggable: false, anchor: 'center',
     lineWidth: 1.0, lineColor: new util.Color('black'),
     fillColor: new util.Color([-1.0, -1.0, -1.0]), colorSpace: 'rgb', depth: -5, interpolate: true,
   });
@@ -483,24 +483,19 @@ function setOrderRoutineBegin(snapshot) {
     t = 0; frameN = -1; continueRoutine = false; routineForceEnded = false;
     setOrderClock.reset(); routineTimer.reset(); setOrderMaxDurationReached = false;
 
-    const VERSIONS   = ["original", "taste", "health"];
+    const VALID_VERSIONS = ["original", "taste", "health"];
     const QUESTIONS  = ["liking", "taste", "health"];
-    const BASE_PATH  = "taste&health/";   // ← no blurred_ prefix
-
-    function makeProductAssignment() {
-      let col0 = shuffleArray([0, 1, 2]);
-      let assignment = QUESTIONS.map((_, qi) => [
-        col0[qi],
-        (col0[qi] + 1) % 3,
-        (col0[qi] + 2) % 3
-      ]);
-      return assignment;
+    const BASE_PATH  = "taste&health/";
+    
+    let assigned_version = expInfo["condition"];
+    
+    if (!VALID_VERSIONS.includes(assigned_version)) {
+      assigned_version = "original";
     }
-
-    let productAssignments = {};
-    for (const prod of all_products) {
-      productAssignments[prod] = makeProductAssignment();
-    }
+    
+    psychoJS.experiment.addData("subject_image_condition", assigned_version);
+    
+    
 
     selected_trials = [];
     block_plan = [];
@@ -530,9 +525,7 @@ function setOrderRoutineBegin(snapshot) {
 
       for (let pi = 0; pi < shuffled_products.length; pi++) {
         let prod = shuffled_products[pi];
-        let version_idx = productAssignments[prod][block.question_idx][block.round];
-        let version_name = VERSIONS[version_idx];
-        // Clean image path — no blurred_ prefix
+        let version_name = assigned_version;
         let img_path = `${BASE_PATH}${prod}_${version_name}.png`;
 
         selected_trials.push({
@@ -1350,6 +1343,7 @@ async function quitPsychoJS(message, isCompleted) {
     psychoJS.experiment.addData('experiment_end_time', new Date().toISOString());
     psychoJS.experiment.addData('experiment_start_time', expInfo['experiment_start_time'] || "");
     psychoJS.experiment.addData('prolific_pid', expInfo['PROLIFIC_PID'] || "");
+    psychoJS.experiment.addData('completion_code', expInfo['completion_code'] || "");
     
     const rows = psychoJS.experiment._trialsData || [];
     if (!rows.length) throw new Error("No experiment rows found to upload.");
@@ -1360,7 +1354,9 @@ async function quitPsychoJS(message, isCompleted) {
     psychoJS.window.close();
     psychoJS.quit({ message, isCompleted });
     if (isCompleted) {
-      window.location.href = "https://app.prolific.com/submissions/complete?cc=C1MGMEAC";
+      const completionCode = expInfo["completion_code"] || "C1MGMEAC";
+      window.location.href = `https://app.prolific.com/submissions/complete?cc=${completionCode}`;
+    }
     }
     return Scheduler.Event.QUIT;
   
