@@ -1334,31 +1334,59 @@ function makeUploadFilename() {
   return `${pid}_${isoTime}.csv`;
 }
 async function quitPsychoJS(message, isCompleted) {
-  if (psychoJS.experiment.isEntryEmpty()) psychoJS.experiment.nextEntry();
-  document.body.innerHTML = `<div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:28px;color:white;background:black;height:100vh;">Saving your data...<br><br>Please do not close this page.</div>`;
+  if (psychoJS.experiment.isEntryEmpty()) {
+    psychoJS.experiment.nextEntry();
+  }
+
+  document.body.innerHTML = `
+    <div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:28px;color:white;background:black;height:100vh;">
+      Saving your data...<br><br>Please do not close this page.
+    </div>
+  `;
+
   try {
     psychoJS.experiment.addData('experiment_end_time', new Date().toISOString());
     psychoJS.experiment.addData('experiment_start_time', expInfo['experiment_start_time'] || "");
     psychoJS.experiment.addData('prolific_pid', expInfo['PROLIFIC_PID'] || "");
     psychoJS.experiment.addData('completion_code', expInfo['completion_code'] || "");
-    
+
     const rows = psychoJS.experiment._trialsData || [];
-    if (!rows.length) throw new Error("No experiment rows found to upload.");
+
+    if (!rows.length) {
+      throw new Error("No experiment rows found to upload.");
+    }
+
     const columns = [...new Set(rows.flatMap(row => Object.keys(row)))];
     const csvText = convertRowsToCSV(rows, columns);
+
     await uploadToDataPipe(csvText, makeUploadFilename());
-    document.body.innerHTML = `<div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:28px;color:white;background:black;height:100vh;">Your data were saved successfully.<br><br>You may now close this page.</div>`;
-    psychoJS.window.close();
-    psychoJS.quit({ message, isCompleted });
+
+    document.body.innerHTML = `
+      <div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:28px;color:white;background:black;height:100vh;">
+        Your data were saved successfully.<br><br>Redirecting you to Prolific...
+      </div>
+    `;
+
     if (isCompleted) {
       const completionCode = expInfo["completion_code"] || "C1MGMEAC";
       window.location.href = `https://app.prolific.com/submissions/complete?cc=${completionCode}`;
+    } else {
+      psychoJS.quit({ message, isCompleted });
     }
+
     return Scheduler.Event.QUIT;
-  
+
   } catch (err) {
     console.error("Upload failed:", err);
-    document.body.innerHTML = `<div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:24px;color:white;background:black;height:100vh;">There was a problem saving your data.<br><br>Please contact the researcher.<br><br>Error: ${err.message}</div>`;
+
+    document.body.innerHTML = `
+      <div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:24px;color:white;background:black;height:100vh;">
+        There was a problem saving your data.<br><br>
+        Please contact the researcher.<br><br>
+        Error: ${err.message}
+      </div>
+    `;
+
     return Scheduler.Event.QUIT;
   }
 }
