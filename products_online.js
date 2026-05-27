@@ -500,18 +500,15 @@ function setOrderRoutineBegin(snapshot) {
     selected_trials = [];
     block_plan = [];
 
-    const IMC_TARGETS = [6, 2, 4, 6, 2, 4, 6, 2, 4];
+    const IMC_TARGETS = [6, 2, 4];
 
-    let ordered_blocks = [];
-    for (let round = 0; round < 3; round++) {
-      let round_blocks = QUESTIONS.map((q, qi) => ({
-        block_question: q,
-        round: round,
-        question_idx: qi
-      }));
-      round_blocks = shuffleArray(round_blocks);
-      for (const b of round_blocks) ordered_blocks.push(b);
-    }
+    let ordered_blocks = QUESTIONS.map((q, qi) => ({
+      block_question: q,
+      round: 0,
+      question_idx: qi
+    }));
+    
+    ordered_blocks = shuffleArray(ordered_blocks);
     for (let bi = 0; bi < ordered_blocks.length; bi++) {
       ordered_blocks[bi].block_num = bi + 1;
       ordered_blocks[bi].imc_target = IMC_TARGETS[bi];
