@@ -1357,7 +1357,6 @@ async function quitPsychoJS(message, isCompleted) {
       const completionCode = expInfo["completion_code"] || "C1MGMEAC";
       window.location.href = `https://app.prolific.com/submissions/complete?cc=${completionCode}`;
     }
-    }
     return Scheduler.Event.QUIT;
   
   } catch (err) {
