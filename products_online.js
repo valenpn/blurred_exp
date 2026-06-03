@@ -255,7 +255,7 @@ async function experimentInit() {
     width: 0.72, height: 0.006, ori: 0.0, pos: [0, -0.08],
     draggable: false, anchor: 'center', lineWidth: 0,
     lineColor: new util.Color('white'), fillColor: new util.Color('white'),
-    colorSpace: 'rgb', opacity: 1.0, depth: -4, interpolate: true,
+    colorSpace: 'rgb', opacity: 0.0, depth: -4, interpolate: true,
   });
   sliderMarker = new visual.Polygon({
     win: psychoJS.window, name: 'sliderMarker', edges: 64,
