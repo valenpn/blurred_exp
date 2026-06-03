@@ -224,7 +224,7 @@ async function experimentInit() {
     ["taste",  "How TASTY do you think the product is?"],
     ["health", "How HEALTHY do you think the product is?"]
   ];
-  SLIDER_MIN = 0; SLIDER_MAX = 7; SLIDER_WIDTH = 0.72; SLIDER_Y = -0.20;
+  SLIDER_MIN = 0; SLIDER_MAX = 7; SLIDER_WIDTH = 0.72; SLIDER_Y = -0.08;
   questionClock  = new util.Clock();
   delayClock     = new util.Clock();
   exposureClock  = new util.Clock();   // times the image-exposure phase
@@ -242,24 +242,24 @@ async function experimentInit() {
   });
   questionText = new visual.TextStim({
     win: psychoJS.window, name: 'questionText', text: 'placeholder',
-    font: 'Arial', pos: [0, -0.08], draggable: false, height: 0.035,
+    font: 'Arial', pos: [0, 0.12], draggable: false, height: 0.035,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
   });
   ratingValueText = new visual.TextStim({
     win: psychoJS.window, name: 'ratingValueText', text: 'Rating:',
-    font: 'Arial', pos: [0, -0.08], draggable: false, height: 0.028,
+    font: 'Arial', pos: [0, 0.03], draggable: false, height: 0.028,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -3.0
   });
   sliderLine = new visual.Rect({
     win: psychoJS.window, name: 'sliderLine',
-    width: 0.72, height: 0.006, ori: 0.0, pos: [0, -0.20],
+    width: 0.72, height: 0.006, ori: 0.0, pos: [0, -0.08],
     draggable: false, anchor: 'center', lineWidth: 0,
     lineColor: new util.Color('white'), fillColor: new util.Color('white'),
     colorSpace: 'rgb', opacity: 1.0, depth: -4, interpolate: true,
   });
   sliderMarker = new visual.Polygon({
     win: psychoJS.window, name: 'sliderMarker', edges: 64,
-    size: [0.02, 0.02], ori: 0.0, pos: [0, -0.20], draggable: false, anchor: 'center',
+    size: [0.02, 0.02], ori: 0.0, pos: [0, -0.08], draggable: false, anchor: 'center',
     lineWidth: 1.0, lineColor: new util.Color('white'), fillColor: new util.Color('white'),
     colorSpace: 'rgb', opacity: 1.0, depth: -3.5, interpolate: true,
   });
@@ -268,13 +268,13 @@ async function experimentInit() {
     let xPos = -0.36 + (i / 7) * 0.72;
     sliderTicks.push(new visual.TextStim({
       win: psychoJS.window, name: `sliderTick_${i}`, text: String(i),
-      font: 'Arial', pos: [xPos, -0.25], draggable: false, height: 0.025,
+      font: 'Arial', pos: [xPos, -0.13], draggable: false, height: 0.025,
       languageStyle: 'LTR', color: new util.Color('white'), opacity: 1.0, depth: -4.2
     }));
   }
   sliderCover = new visual.Rect({
     win: psychoJS.window, name: 'sliderCover',
-    width: 0.8, height: 0.18, ori: 0.0, pos: [0, -0.22], draggable: false, anchor: 'center',
+    width: 0.8, height: 0.18, ori: 0.0, pos: [0, -0.10], draggable: false, anchor: 'center',
     lineWidth: 1.0, lineColor: new util.Color('black'),
     fillColor: new util.Color([-1.0, -1.0, -1.0]), colorSpace: 'rgb', depth: -5, interpolate: true,
   });
@@ -282,12 +282,12 @@ async function experimentInit() {
   ratingMouse.mouseClock = new util.Clock();
   leftAnchor = new visual.TextStim({
     win: psychoJS.window, name: 'leftAnchor', text: 'Not at all',
-    font: 'Arial', pos: [-0.35, -0.44], draggable: false, height: 0.022,
+    font: 'Arial', pos: [-0.35, -0.19], draggable: false, height: 0.022,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -7.0
   });
   rightAnchor = new visual.TextStim({
     win: psychoJS.window, name: 'rightAnchor', text: 'Very much',
-    font: 'Arial', pos: [0.35, -0.44], draggable: false, height: 0.022,
+    font: 'Arial', pos: [0.35, -0.19], draggable: false, height: 0.022,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -8.0
   });
   warningText = new visual.TextStim({
