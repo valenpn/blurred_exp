@@ -798,7 +798,7 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingValueText.text = "";
     leftAnchor.text = "";
     rightAnchor.text = "";
-    sliderCover.opacity = 1.0;   // covers slider during exposure phase
+    sliderCover.opacity = 0.0;   // covers slider during exposure phase
     warningText.opacity = 0.0;
 
     waiting_next_question = false; timeout_warning = false; click_ready = false;
