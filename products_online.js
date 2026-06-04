@@ -157,16 +157,17 @@ var sliderLine, sliderMarker, sliderTicks, sliderCover, ratingMouse;
 var leftAnchor, rightAnchor, warningText;
 var memoryTrialClock;
 var all_products;
-var imcQuestion, imcTargetText, imcWarningText2;
 var imcTrialClock;
-var show_imc, imc_target_val, imc_slider_response, imc_pass;
 var thanksClock, endText, endKey;
 var globalClock, routineTimer;
 var blockIntroClock, blockIntroText, blockIntroKey, lastSeenBlockNum;
-var selected_trials, block_plan, show_imc, imc_target_val, imc_slider_response, imc_pass;
 var blockIntroMaxDurationReached, _blockIntroKey_allKeys, blockIntroMaxDuration, blockIntroComponents;
 var imcTrialMaxDurationReached, imcTrialMaxDuration, imcTrialComponents;
-var imcQuestionClock, imcDelayClock;
+var memoryQuestion, opt1Text, opt2Text, opt3Text, memoryKey, memoryWarningText;
+var show_memory, memory_correct_product, memory_options;
+var memoryTrialMaxDurationReached, _memoryKey_allKeys, memoryTrialMaxDuration, memoryTrialComponents;
+var memoryQuestionClock, memoryDelayClock;
+var memoryWaitingNext, memoryTimeoutWarning, memoryNormalDelay, memoryWarningDelay;
 var imcWaitingNext, imcTimeoutWarning, imcNormalDelay, imcWarningDelay;
 // imageExposurePhase: true = showing image, false = black-screen rating phase
 var imageExposurePhase;
@@ -303,25 +304,39 @@ async function experimentInit() {
     "Belvita","Chips_Ahoy!","Goldfish","KIND","Lindt","Lipton_Tea",
     "Nature_Valley","PLANTERS_Cashews","Pocky","Pringles","RitterSport","TERRA_chips","Twix"
   ];
-  imcQuestion = new visual.TextStim({
-      win: psychoJS.window, name: 'imcQuestion',
-      text: '',
-      font: 'Arial', pos: [0, -0.20], draggable: false, height: 0.030, wrapWidth: 1.3,
-      languageStyle: 'LTR', color: new util.Color('white'), depth: -1.0
-    });
-    imcTargetText = new visual.TextStim({
-      win: psychoJS.window, name: 'imcTargetText', text: '',
-      font: 'Arial', pos: [0, -0.26], draggable: false, height: 0.028, wrapWidth: 1.3,
-      languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
-    });
-    imcWarningText2 = new visual.TextStim({
-      win: psychoJS.window, name: 'imcWarningText2', text: 'Please respond before 5 seconds',
-      font: 'Arial', pos: [0, 0], draggable: false, height: 0.04,
-      languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -3.0
-    });
-  imcNormalDelay = 0.5;  imcWarningDelay = 1.5;
-
-  // ── Thanks ───────────────────────────────────────────────────────────────
+  memoryTrialClock = new util.Clock();
+  memoryQuestion = new visual.TextStim({
+    win: psychoJS.window, name: 'memoryQuestion',
+    text: 'Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond',
+    font: 'Arial', pos: [0, 0.2], draggable: false, height: 0.05,
+    languageStyle: 'LTR', color: new util.Color('white'), depth: -1.0
+  });
+  opt1Text = new visual.TextStim({
+    win: psychoJS.window, name: 'opt1Text', text: '1',
+    font: 'Arial', pos: [0, 0.05], draggable: false, height: 0.035, wrapWidth: 1.0,
+    languageStyle: 'LTR', color: new util.Color('white'), depth: -2.0
+  });
+  opt2Text = new visual.TextStim({
+    win: psychoJS.window, name: 'opt2Text', text: '2',
+    font: 'Arial', pos: [0, -0.05], draggable: false, height: 0.035, wrapWidth: 1.0,
+    languageStyle: 'LTR', color: new util.Color('white'), depth: -3.0
+  });
+  opt3Text = new visual.TextStim({
+    win: psychoJS.window, name: 'opt3Text', text: '3',
+    font: 'Arial', pos: [0, -0.15], draggable: false, height: 0.035, wrapWidth: 1.0,
+    languageStyle: 'LTR', color: new util.Color('white'), depth: -4.0
+  });
+  memoryKey = new core.Keyboard({ psychoJS, clock: new util.Clock(), waitForStart: true });
+  memoryQuestionClock = new util.Clock();
+  memoryDelayClock    = new util.Clock();
+  memoryWaitingNext = false; memoryTimeoutWarning = false;
+  memoryNormalDelay = 0.5;  memoryWarningDelay = 1.5;
+  memoryWarningText = new visual.TextStim({
+    win: psychoJS.window, name: 'memoryWarningText', text: 'Please answer before 8 seconds',
+    font: 'Arial', pos: [0, -0.28], draggable: false, height: 0.04,
+    languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -5.0
+  });
+   // ── Thanks ───────────────────────────────────────────────────────────────
   thanksClock = new util.Clock();
   endText = new visual.TextStim({
     win: psychoJS.window, name: 'endText', text: 'Thank you!\nPress SPACE to exit.',
@@ -501,29 +516,128 @@ function setOrderRoutineBegin(snapshot) {
     selected_trials = [];
     block_plan = [];
 
-    const IMC_TARGETS = [6, 2, 4];
+    // ═══════════════════════════════════════════════════════════════════════════
+//  SET ORDER  ← core counterbalancing logic lives here
+// ═══════════════════════════════════════════════════════════════════════════
+/*
+  Design
+  ──────
+  Products:  13 (Belvita, Chips_Ahoy!, …, Twix)
+  Versions:  3  (original, taste, health)
+  Questions: 3  (liking, taste, health)
+  Blocks:    9  (3 questions × 3 repetitions)
 
-    let ordered_blocks = QUESTIONS.map((q, qi) => ({
-      block_question: q,
-      round: 0,
-      question_idx: qi
-    }));
-    
-    ordered_blocks = shuffleArray(ordered_blocks);
+  Constraint: over the full experiment every (product × version) cell is
+  rated with every question exactly once.
+
+  Implementation
+  ──────────────
+  1.  For each product, randomly generate a 3×3 Latin-square that maps
+      question → version.  Concretely: generate a random permutation of
+      [0,1,2] for each question type (so the same version is never repeated
+      for a given question across blocks).
+
+  2.  9 blocks are arranged as 3 "rounds" × 3 question-types.
+      - Round r (0-indexed), question q → use version assignment[q][r]
+      - Within each block, the 13 products are shuffled.
+
+  3.  Within each block, one trial is randomly selected as the memory-catch
+      position (never the very first trial of the block to avoid it firing
+      right after the intro).
+
+  Trial object fields (compatible with the rest of the routines):
+    product_id, image_path, block_num (1-9), block_question,
+    block_image_version, is_last_trial_in_block, is_memory_trial_position
+*/
+var setOrderMaxDurationReached, setOrderMaxDuration, setOrderComponents;
+
+function setOrderRoutineBegin(snapshot) {
+  return async function () {
+    TrialHandler.fromSnapshot(snapshot);
+    t = 0; frameN = -1; continueRoutine = false; routineForceEnded = false;
+    setOrderClock.reset(); routineTimer.reset(); setOrderMaxDurationReached = false;
+
+    const VERSIONS   = ["original", "taste", "health"];
+    const QUESTIONS  = ["liking", "taste", "health"];
+    const BASE_PATH  = "taste&health/";
+
+    // Per-product Latin square: for each question, which version to use in rounds 0,1,2
+    // We build a 3×3 matrix where rows = questions, cols = rounds,
+    // and every column is a permutation of VERSIONS.
+    // Strategy: generate one random permutation of versions for round 0,
+    //   rotate +1 for round 1, +2 for round 2 → guarantees no question
+    //   repeats the same version AND each version appears once per question.
+    function makeProductAssignment() {
+      // assignment[question_idx][round_idx] = version_idx
+      // Start with a random column-0, then derive columns 1 and 2 by rotation.
+      let col0 = shuffleArray([0, 1, 2]);           // random permutation for round 0
+      let assignment = QUESTIONS.map((_, qi) => [
+        col0[qi],
+        (col0[qi] + 1) % 3,
+        (col0[qi] + 2) % 3
+      ]);
+      return assignment;  // [3][3]
+    }
+
+    // Build per-product assignment maps
+    // productAssignments[product] = 3×3 matrix (see above)
+    let productAssignments = {};
+    for (const prod of all_products) {
+      productAssignments[prod] = makeProductAssignment();
+    }
+
+    // Build 9 blocks: round 0..2 × question 0..2
+    selected_trials = [];
+    block_plan = [];
+    let global_block_num = 1;
+
+    // Pick 9 of the 13 products at random (without replacement) as memory targets,
+    // one per block.  The remaining 4 products never serve as targets this session.
+    let memory_target_pool = shuffleArray([...all_products]).slice(0, 9);
+    // memory_target_pool[block_index] = the product that is the catch target for that block
+    let memory_target_by_block = {};   // filled as we assign block numbers below
+
+    // First pass: build the ordered list of 9 blocks so we can assign targets
+    let ordered_blocks = [];
+    for (let round = 0; round < 3; round++) {
+      let round_blocks = QUESTIONS.map((q, qi) => ({
+        block_question: q,
+        round: round,
+        question_idx: qi
+      }));
+      round_blocks = shuffleArray(round_blocks);
+      for (const b of round_blocks) ordered_blocks.push(b);
+    }
+    // Assign block numbers and memory targets
     for (let bi = 0; bi < ordered_blocks.length; bi++) {
       ordered_blocks[bi].block_num = bi + 1;
-      ordered_blocks[bi].imc_target = IMC_TARGETS[bi];
+      ordered_blocks[bi].memory_target = memory_target_pool[bi];
+      memory_target_by_block[bi + 1] = memory_target_pool[bi];
       block_plan.push(ordered_blocks[bi]);
     }
 
+    // Second pass: build trials
     for (const block of ordered_blocks) {
-      let imc_target = block.imc_target;
+      global_block_num = block.block_num;
+      let memory_target = block.memory_target;
+
+      // Shuffle products for this block
       let shuffled_products = shuffleArray(all_products);
-      let imc_idx = 1 + Math.floor(Math.random() * (shuffled_products.length - 1));
+
+      // Find index of the memory target product in the shuffled list.
+      // The catch cannot be at index 0 (too close to block intro).
+      // If the target landed at index 0, swap it with a random later position.
+      let target_idx = shuffled_products.indexOf(memory_target);
+      if (target_idx === 0) {
+        let swap_with = 1 + Math.floor(Math.random() * (shuffled_products.length - 1));
+        [shuffled_products[0], shuffled_products[swap_with]] = [shuffled_products[swap_with], shuffled_products[0]];
+        target_idx = swap_with;
+      }
 
       for (let pi = 0; pi < shuffled_products.length; pi++) {
         let prod = shuffled_products[pi];
-        let version_name = assigned_version;
+        let version_idx = productAssignments[prod][block.question_idx][block.round];
+        let version_name = VERSIONS[version_idx];
         let img_path = `${BASE_PATH}${prod}_${version_name}.png`;
 
         selected_trials.push({
@@ -534,11 +648,36 @@ function setOrderRoutineBegin(snapshot) {
           block_question:           block.block_question,
           round:                    block.round,
           is_last_trial_in_block:   (pi === shuffled_products.length - 1) ? 1 : 0,
-          is_imc_trial_position:    (pi === imc_idx) ? 1 : 0,
-          imc_target:               imc_target
+          // catch fires on the trial that shows the designated memory target product
+          is_memory_trial_position: (pi === target_idx) ? 1 : 0,
+          memory_target_product:    memory_target   // stored for every trial in the block for reference
         });
       }
     }
+
+    psychoJS.experiment.addData('block_plan', JSON.stringify(block_plan));
+    psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
+    setOrderMaxDuration = null;
+    setOrderComponents = [];
+    return Scheduler.Event.NEXT;
+  };
+}
+
+function setOrderRoutineEachFrame() {
+  return async function () {
+    if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
+      return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
+    return Scheduler.Event.NEXT;
+  };
+}
+function setOrderRoutineEnd(snapshot) {
+  return async function () {
+    psychoJS.experiment.addData('setOrder.stopped', globalClock.getTime());
+    routineTimer.reset();
+    if (currentLoop === psychoJS.experiment) psychoJS.experiment.nextEntry(snapshot);
+    return Scheduler.Event.NEXT;
+  };
+}
 
     psychoJS.experiment.addData('block_plan', JSON.stringify(block_plan));
     psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
@@ -1012,220 +1151,98 @@ function ratingTrialRoutineEnd(snapshot) {
     return Scheduler.Event.NEXT;
   };
 }
-
+/ ═══════════════════════════════════════════════════════════════════════════
+//  MEMORY TRIAL  (fires on every block — one catch per block)
 // ═══════════════════════════════════════════════════════════════════════════
-//  IMC (ATTENTION CHECK) TRIAL
-//  Same two-phase structure:
-//    Phase 1 — product image shown for 1500 ms
-//    Phase 2 — black screen with instruction to move slider to target value
-// ═══════════════════════════════════════════════════════════════════════════
-var imcTrialMaxDurationReached;
 function memoryTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot);
     t = 0; frameN = -1; continueRoutine = true; routineForceEnded = false;
-    imcTrialClock = new util.Clock(); imcTrialClock.reset();
-    routineTimer.reset(); imcTrialMaxDurationReached = false;
+    memoryTrialClock.reset(); routineTimer.reset(); memoryTrialMaxDurationReached = false;
 
+    // Safety net: read directly from trial object if globals not set
     const _mt = snapshot.getCurrentTrial ? snapshot.getCurrentTrial() : {};
-    if (typeof is_imc_trial_position === 'undefined' || is_imc_trial_position === null)
-      is_imc_trial_position = _mt.is_imc_trial_position || 0;
-    if (typeof imc_target === 'undefined' || imc_target === null)
-      imc_target = _mt.imc_target !== undefined ? _mt.imc_target : 6;
+    if (typeof is_memory_trial_position === 'undefined' || is_memory_trial_position === null)
+      is_memory_trial_position = _mt.is_memory_trial_position || 0;
+    if (typeof product_id === 'undefined' || product_id === null)
+      product_id = _mt.product_id || '';
+    if (typeof memory_target_product === 'undefined' || memory_target_product === null)
+      memory_target_product = _mt.memory_target_product || '';
     if (typeof block_num === 'undefined' || block_num === null)
       block_num = _mt.block_num || 0;
-    if (typeof image_path === 'undefined' || image_path === null)
-      image_path = _mt.image_path || 'default.png';
 
-    show_imc = (is_imc_trial_position === 1);
-    imc_target_val = imc_target;
-    imc_slider_response = null;
-    imc_pass = null;
+    // show_memory = true only at the designated catch-trial position
+    show_memory = (is_memory_trial_position === 1);
+    memory_correct_product = "";
 
-    if (!show_imc) {
+    if (!show_memory) {
       continueRoutine = false;
     } else {
       document.body.style.cursor = 'none';
-
-      // Random slider start
-      let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
-      current_x = start_x;
-      let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-      init_val = Math.min(Math.max(parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
-      sliderMarker.setPos([current_x, SLIDER_Y]);
-      ratingValueText.text = "Rating: " + init_val.toFixed(1);
-
-      const safe_imc_image = (typeof image_path === 'string' && image_path.length > 0)
-        ? image_path : 'default.png';
-      productImage.setImage(safe_imc_image);
-
-      // Start in exposure phase
-      imageExposurePhase = true;
-      exposureClock.reset();
-      productImage.opacity = 1.0;
-
-      // Hide rating UI initially
-      imcQuestion.text    = "";
-      imcTargetText.text  = "";
-      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
-      imcWarningText2.opacity = 0.0;
-      leftAnchor.text  = "";
-      rightAnchor.text = "";
-
-      ratingMouse.x = []; ratingMouse.y = []; ratingMouse.leftButton = [];
-      ratingMouse.midButton = []; ratingMouse.rightButton = []; ratingMouse.time = [];
-      gotValidClick = false;
-      click_ready = false;
-
-      imcQuestionClock = new util.Clock(); // will be reset at phase transition
-      imcDelayClock    = new util.Clock(); imcDelayClock.reset();
-      imcWaitingNext = false; imcTimeoutWarning = false;
+      memory_correct_product = product_id;
+      let wrong_options = all_products.filter(p => p !== memory_correct_product);
+      wrong_options = shuffleArray(wrong_options).slice(0, 2);
+      memory_options = shuffleArray([memory_correct_product, ...wrong_options]);
+      opt1Text.text = `1) ${memory_options[0]}`;
+      opt2Text.text = `2) ${memory_options[1]}`;
+      opt3Text.text = `3) ${memory_options[2]}`;
+      memoryKey.keys = undefined; memoryKey.rt = undefined; _memoryKey_allKeys = [];
     }
 
-    psychoJS.experiment.addData("imc_shown", show_imc ? 1 : 0);
-    psychoJS.experiment.addData("imc_target", show_imc ? imc_target_val : "");
+    psychoJS.experiment.addData("memory_catch_shown", show_memory ? 1 : 0);
+    psychoJS.experiment.addData("memory_correct_product", show_memory ? memory_correct_product : "");
+    psychoJS.experiment.addData("memory_target_product", typeof memory_target_product !== 'undefined' ? memory_target_product : "");
 
-    imcTrialComponents = [
-      productImage, imcQuestion, imcTargetText, imcWarningText2,
-      ratingValueText, sliderLine, sliderMarker, ...sliderTicks,
-      sliderCover, ratingMouse, leftAnchor, rightAnchor
-    ];
-    for (const c of imcTrialComponents) if ('status' in c) c.status = PsychoJS.Status.NOT_STARTED;
+    memoryTrialMaxDuration = null;
+    memoryWaitingNext = false; memoryTimeoutWarning = false;
+    memoryQuestionClock = new util.Clock(); memoryQuestionClock.reset();
+    memoryDelayClock    = new util.Clock(); memoryDelayClock.reset();
+    memoryWarningText.opacity = 0.0;
+
+    memoryTrialComponents = [memoryQuestion, opt1Text, opt2Text, opt3Text, memoryKey, memoryWarningText];
+    for (const c of memoryTrialComponents) if ('status' in c) c.status = PsychoJS.Status.NOT_STARTED;
     return Scheduler.Event.NEXT;
   };
 }
 
 function memoryTrialRoutineEachFrame() {
   return async function () {
-    t = imcTrialClock.getTime(); frameN++;
-    if (!show_imc) return Scheduler.Event.NEXT;
+    t = memoryTrialClock.getTime(); frameN++;
+    if (!show_memory) return Scheduler.Event.NEXT;
 
-    // ── IMC Phase 1: Image exposure ──────────────────────────────────────
-    if (imageExposurePhase) {
-      productImage.opacity    = 1.0;
-      imcQuestion.text        = "";
-      imcTargetText.text      = "";
-      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
-      imcWarningText2.opacity = 0.0;
-      leftAnchor.text         = "";
-      rightAnchor.text        = "";
-      sliderLine.opacity = 0.0;
-      sliderMarker.opacity = 0.0;
-      for (const tick of sliderTicks) tick.opacity = 0.0;
-      ratingValueText.opacity = 0.0;
-      leftAnchor.opacity = 0.0;
-      rightAnchor.opacity = 0.0;
-
-      if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
-        // Transition to IMC rating phase
-        imageExposurePhase = false;
-        sliderLine.opacity = 1.0;
-        sliderMarker.opacity = 1.0;
-        for (const tick of sliderTicks) tick.opacity = 1.0;
-        ratingValueText.opacity = 1.0;
-        leftAnchor.opacity = 1.0;
-        rightAnchor.opacity = 1.0;
-        productImage.opacity = 0.0;   // black screen
-        imcQuestion.text     = "ATTENTION check: IGNORE THE IMAGE. Move the slider to " + imc_target_val + " and click to continue.";
-        imcTargetText.text   = "";
-        sliderCover.opacity  = 0.0;
-        leftAnchor.text      = "Not at all";
-        rightAnchor.text     = "Very much";
-        ratingValueText.text = "Rating: " + (
-          ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
-        ).toFixed(1);
-        imcQuestionClock = new util.Clock(); imcQuestionClock.reset();
-        click_ready = false;
-      }
-
-      // Auto-draw
-      const drawAll = [
-        productImage, imcQuestion, imcTargetText, imcWarningText2,
-        ratingValueText, sliderLine, sliderMarker, ...sliderTicks,
-        sliderCover, leftAnchor, rightAnchor
-      ];
-      for (const c of drawAll) {
-        if (t >= 0.0 && c.status === PsychoJS.Status.NOT_STARTED) {
-          c.tStart = t; c.frameNStart = frameN; c.setAutoDraw(true);
-        }
-      }
-      if (t >= 0.0 && ratingMouse.status === PsychoJS.Status.NOT_STARTED) {
-        ratingMouse.tStart = t; ratingMouse.frameNStart = frameN;
-        ratingMouse.status = PsychoJS.Status.STARTED;
-        ratingMouse.mouseClock.reset(); prevButtonState = ratingMouse.getPressed();
-      }
-
-      if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
-        return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
-
-      return Scheduler.Event.FLIP_REPEAT;
-    }
-
-    // ── IMC Phase 2: Black-screen rating ────────────────────────────────
-    let mousePos      = ratingMouse.getPos();
-    let mouse_pressed = ratingMouse.getPressed()[0] === 1;
-    if (!mouse_pressed) click_ready = true;
-    if (mousePos && Math.abs(mousePos[0]) > 0.001) current_x = mousePos[0];
-    current_x = Math.max(-SLIDER_WIDTH / 2, Math.min(SLIDER_WIDTH / 2, current_x));
-    let cv = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-    cv = Math.min(Math.max(parseFloat(cv.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
-
-    if (imcWaitingNext) {
-      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
-      imcWarningText2.opacity = imcTimeoutWarning ? 1.0 : 0.0;
-      let delayNeeded = imcTimeoutWarning ? imcWarningDelay : imcNormalDelay;
-      if (imcDelayClock.getTime() >= delayNeeded) {
+    if (memoryWaitingNext) {
+      memoryWarningText.opacity = memoryTimeoutWarning ? 1.0 : 0.0;
+      let delayNeeded = memoryTimeoutWarning ? memoryWarningDelay : memoryNormalDelay;
+      if (memoryDelayClock.getTime() >= delayNeeded) {
         continueRoutine = false; routineForceEnded = true;
       }
     } else {
-      productImage.opacity    = 0.0;   // keep image hidden on black screen
-      sliderCover.opacity     = 0.0;
-      imcWarningText2.opacity = 0.0;
-      sliderMarker.setPos([current_x, SLIDER_Y]);
-      ratingValueText.text    = "Rating: " + cv.toFixed(1);
-
-      if (imcQuestionClock.getTime() >= TTIME_LIMIT) {
-        imc_slider_response = null;
-        imc_pass = 0;
-        imcTimeoutWarning = true; imcWaitingNext = true;
-        imcDelayClock = new util.Clock(); imcDelayClock.reset();
-      } else if (mouse_pressed && click_ready) {
-        click_ready = false;
-        imc_slider_response = cv;
-        imc_pass = (Math.abs(cv - imc_target_val) <= 0.2) ? 1 : 0;
-        imcTimeoutWarning = false; imcWaitingNext = true;
-        imcDelayClock = new util.Clock(); imcDelayClock.reset();
+      memoryWarningText.opacity = 0.0;
+      if (memoryQuestionClock.getTime() >= 8.0) {
+        memoryKey.keys = null; memoryKey.rt = null;
+        memoryTimeoutWarning = true; memoryWaitingNext = true;
+        memoryDelayClock = new util.Clock(); memoryDelayClock.reset();
       }
     }
 
-    // Auto-draw all IMC components
-    const startAll = [
-      productImage, imcQuestion, imcTargetText, imcWarningText2,
-      ratingValueText, sliderLine, sliderMarker, ...sliderTicks,
-      sliderCover, leftAnchor, rightAnchor
-    ];
+    const startAll = [memoryQuestion, opt1Text, opt2Text, opt3Text, memoryWarningText];
     for (const c of startAll) {
       if (t >= 0.0 && c.status === PsychoJS.Status.NOT_STARTED) {
         c.tStart = t; c.frameNStart = frameN; c.setAutoDraw(true);
       }
     }
-    if (t >= 0.0 && ratingMouse.status === PsychoJS.Status.NOT_STARTED) {
-      ratingMouse.tStart = t; ratingMouse.frameNStart = frameN;
-      ratingMouse.status = PsychoJS.Status.STARTED;
-      ratingMouse.mouseClock.reset(); prevButtonState = ratingMouse.getPressed();
+    if (t >= 0.0 && memoryKey.status === PsychoJS.Status.NOT_STARTED) {
+      memoryKey.tStart = t; memoryKey.frameNStart = frameN;
+      psychoJS.window.callOnFlip(() => { memoryKey.clock.reset(); memoryKey.start(); memoryKey.clearEvents(); });
     }
-    if (ratingMouse.status === PsychoJS.Status.STARTED) {
-      _mouseButtons = ratingMouse.getPressed();
-      if (!_mouseButtons.every((e, i) => e === prevButtonState[i])) {
-        prevButtonState = _mouseButtons;
-        if (_mouseButtons.reduce((a, e) => a + e) > 0) {
-          _mouseXYs = ratingMouse.getPos();
-          ratingMouse.x.push(_mouseXYs[0]); ratingMouse.y.push(_mouseXYs[1]);
-          ratingMouse.leftButton.push(_mouseButtons[0]);
-          ratingMouse.midButton.push(_mouseButtons[1]);
-          ratingMouse.rightButton.push(_mouseButtons[2]);
-          ratingMouse.time.push(ratingMouse.mouseClock.getTime());
-        }
+    if (memoryKey.status === PsychoJS.Status.STARTED && !memoryWaitingNext) {
+      let theseKeys = memoryKey.getKeys({ keyList: ['1','2','3'], waitRelease: false });
+      _memoryKey_allKeys = _memoryKey_allKeys.concat(theseKeys);
+      if (_memoryKey_allKeys.length > 0) {
+        memoryKey.keys = _memoryKey_allKeys[_memoryKey_allKeys.length - 1].name;
+        memoryKey.rt   = _memoryKey_allKeys[_memoryKey_allKeys.length - 1].rt;
+        memoryTimeoutWarning = false; memoryWaitingNext = true;
+        memoryDelayClock = new util.Clock(); memoryDelayClock.reset();
       }
     }
 
@@ -1233,7 +1250,7 @@ function memoryTrialRoutineEachFrame() {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
     if (!continueRoutine) { routineForceEnded = true; return Scheduler.Event.NEXT; }
     continueRoutine = false;
-    for (const c of imcTrialComponents)
+    for (const c of memoryTrialComponents)
       if ('status' in c && c.status !== PsychoJS.Status.FINISHED) { continueRoutine = true; break; }
     return continueRoutine ? Scheduler.Event.FLIP_REPEAT : Scheduler.Event.NEXT;
   };
@@ -1241,21 +1258,29 @@ function memoryTrialRoutineEachFrame() {
 
 function memoryTrialRoutineEnd(snapshot) {
   return async function () {
-    for (const c of imcTrialComponents) if (typeof c.setAutoDraw === 'function') c.setAutoDraw(false);
-    if (show_imc) {
-      psychoJS.experiment.addData('imc_response', imc_slider_response !== null ? imc_slider_response : "");
-      psychoJS.experiment.addData('imc_pass',     imc_pass !== null ? imc_pass : 0);
-      psychoJS.experiment.addData('imc_rt',       (typeof imcQuestionClock !== 'undefined') ? imcQuestionClock.getTime() : "");
+    for (const c of memoryTrialComponents) if (typeof c.setAutoDraw === 'function') c.setAutoDraw(false);
+    if (show_memory) {
+      let chosenIdx = parseInt(memoryKey.keys) - 1;
+      let chosenProduct = (chosenIdx >= 0 && chosenIdx < memory_options.length) ? memory_options[chosenIdx] : "";
+      let memory_correct = (chosenProduct === memory_correct_product) ? 1 : 0;
+      psychoJS.experiment.addData('memory_key', memoryKey.keys);
+      psychoJS.experiment.addData('memory_rt', memoryKey.rt);
+      psychoJS.experiment.addData('memory_choice_product', chosenProduct);
+      psychoJS.experiment.addData('memory_correct', memory_correct);
+      psychoJS.experiment.addData('memory_option_1', memory_options[0]);
+      psychoJS.experiment.addData('memory_option_2', memory_options[1]);
+      psychoJS.experiment.addData('memory_option_3', memory_options[2]);
     } else {
-      psychoJS.experiment.addData('imc_response', "");
-      psychoJS.experiment.addData('imc_pass',     "");
-      psychoJS.experiment.addData('imc_rt',       "");
+      for (const field of ['memory_key','memory_rt','memory_choice_product','memory_correct','memory_option_1','memory_option_2','memory_option_3'])
+        psychoJS.experiment.addData(field, "");
     }
     routineTimer.reset();
+    if (typeof memoryKey !== 'undefined') memoryKey.stop();
     if (currentLoop === psychoJS.experiment) psychoJS.experiment.nextEntry(snapshot);
     return Scheduler.Event.NEXT;
   };
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  THANKS
