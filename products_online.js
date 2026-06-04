@@ -1103,10 +1103,22 @@ function memoryTrialRoutineEachFrame() {
       imcWarningText2.opacity = 0.0;
       leftAnchor.text         = "";
       rightAnchor.text        = "";
+      sliderLine.opacity = 0.0;
+      sliderMarker.opacity = 0.0;
+      for (const tick of sliderTicks) tick.opacity = 0.0;
+      ratingValueText.opacity = 0.0;
+      leftAnchor.opacity = 0.0;
+      rightAnchor.opacity = 0.0;
 
       if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
         // Transition to IMC rating phase
         imageExposurePhase = false;
+        sliderLine.opacity = 1.0;
+        sliderMarker.opacity = 1.0;
+        for (const tick of sliderTicks) tick.opacity = 1.0;
+        ratingValueText.opacity = 1.0;
+        leftAnchor.opacity = 1.0;
+        rightAnchor.opacity = 1.0;
         productImage.opacity = 0.0;   // black screen
         imcQuestion.text     = "ATTENTION check: IGNORE THE IMAGE. Move the slider to " + imc_target_val + " and click to continue.";
         imcTargetText.text   = "";
