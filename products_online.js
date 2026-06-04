@@ -478,7 +478,122 @@ function instructionsRoutineEnd(snapshot) {
   };
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+//  SET ORDER
+//  3 blocks total: liking, taste, health
+//  All blocks use ORIGINAL product images only
+// ═══════════════════════════════════════════════════════════════════════════
+var setOrderMaxDurationReached, setOrderMaxDuration, setOrderComponents;
 
+function setOrderRoutineBegin(snapshot) {
+  return async function () {
+    TrialHandler.fromSnapshot(snapshot);
+
+    t = 0;
+    frameN = -1;
+    continueRoutine = false;
+    routineForceEnded = false;
+
+    setOrderClock.reset();
+    routineTimer.reset();
+    setOrderMaxDurationReached = false;
+
+    const QUESTIONS = ["liking", "taste", "health"];
+    const BASE_PATH = "taste&health/";
+    const VERSION_NAME = "original";
+
+    selected_trials = [];
+    block_plan = [];
+
+    // Randomize block order so each participant gets the 3 question blocks
+    // in a random order.
+    let ordered_blocks = shuffleArray(
+      QUESTIONS.map((q, qi) => ({
+        block_num: qi + 1,
+        block_question: q,
+        block_image_version: VERSION_NAME
+      }))
+    );
+
+    // After shuffling, reassign block numbers 1, 2, 3
+    for (let bi = 0; bi < ordered_blocks.length; bi++) {
+      ordered_blocks[bi].block_num = bi + 1;
+      block_plan.push(ordered_blocks[bi]);
+    }
+
+    // One memory catch per block: choose one product in each block.
+    let memory_target_pool = shuffleArray([...all_products]).slice(0, ordered_blocks.length);
+
+    for (let bi = 0; bi < ordered_blocks.length; bi++) {
+      const block = ordered_blocks[bi];
+      const memory_target = memory_target_pool[bi];
+
+      let shuffled_products = shuffleArray(all_products);
+
+      let target_idx = shuffled_products.indexOf(memory_target);
+
+      // Do not put memory catch on the first trial of a block.
+      if (target_idx === 0) {
+        let swap_with = 1 + Math.floor(Math.random() * (shuffled_products.length - 1));
+        [shuffled_products[0], shuffled_products[swap_with]] =
+          [shuffled_products[swap_with], shuffled_products[0]];
+        target_idx = swap_with;
+      }
+
+      for (let pi = 0; pi < shuffled_products.length; pi++) {
+        let prod = shuffled_products[pi];
+        let img_path = `${BASE_PATH}${prod}_${VERSION_NAME}.png`;
+
+        selected_trials.push({
+          product_id: prod,
+          image_path: img_path,
+          block_image_version: VERSION_NAME,
+          block_num: block.block_num,
+          block_question: block.block_question,
+          is_last_trial_in_block: (pi === shuffled_products.length - 1) ? 1 : 0,
+          is_memory_trial_position: (pi === target_idx) ? 1 : 0,
+          memory_target_product: memory_target
+        });
+      }
+    }
+
+    psychoJS.experiment.addData('block_plan', JSON.stringify(block_plan));
+    psychoJS.experiment.addData('n_selected_trials', selected_trials.length);
+    psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
+
+    setOrderMaxDuration = null;
+    setOrderComponents = [];
+
+    return Scheduler.Event.NEXT;
+  };
+}
+
+function setOrderRoutineEachFrame() {
+  return async function () {
+    if (
+      psychoJS.experiment.experimentEnded ||
+      psychoJS.eventManager.getKeys({ keyList: ['escape'] }).length > 0
+    ) {
+      return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
+    }
+
+    return Scheduler.Event.NEXT;
+  };
+}
+
+function setOrderRoutineEnd(snapshot) {
+  return async function () {
+    psychoJS.experiment.addData('setOrder.stopped', globalClock.getTime());
+
+    routineTimer.reset();
+
+    if (currentLoop === psychoJS.experiment) {
+      psychoJS.experiment.nextEntry(snapshot);
+    }
+
+    return Scheduler.Event.NEXT;
+  };
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  BLOCK INTRO
