@@ -154,6 +154,7 @@ var delay_duration, normal_delay, warning_delay;
 var USE_SLIDER_COVER = false;
 var productImage, questionText, ratingValueText;
 var sliderLine, sliderMarker, sliderTicks, sliderCover, ratingMouse;
+var selected_trials, block_plan, show_memory, memory_correct_product, memory_options;
 var leftAnchor, rightAnchor, warningText;
 var memoryTrialClock;
 var all_products;
