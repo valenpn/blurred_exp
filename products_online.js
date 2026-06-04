@@ -151,6 +151,7 @@ var all_questions, SLIDER_MIN, SLIDER_MAX, SLIDER_WIDTH, SLIDER_Y;
 var questionClock, delayClock, exposureClock;
 var waiting_next_question, timeout_warning, click_ready, question_index, current_x;
 var delay_duration, normal_delay, warning_delay;
+var USE_SLIDER_COVER = false;
 var productImage, questionText, ratingValueText;
 var sliderLine, sliderMarker, sliderTicks, sliderCover, ratingMouse;
 var leftAnchor, rightAnchor, warningText;
@@ -798,7 +799,7 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingValueText.text = "";
     leftAnchor.text = "";
     rightAnchor.text = "";
-    sliderCover.opacity = 0.0;   // covers slider during exposure phase
+    sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;  // covers slider during exposure phase
     warningText.opacity = 0.0;
 
     waiting_next_question = false; timeout_warning = false; click_ready = false;
@@ -839,7 +840,7 @@ function ratingTrialRoutineEachFrame() {
       ratingValueText.text = "";
       leftAnchor.text      = "";
       rightAnchor.text     = "";
-      sliderCover.opacity  = 1.0;
+      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       warningText.opacity  = 0.0;
 
       if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
@@ -896,7 +897,7 @@ function ratingTrialRoutineEachFrame() {
       ratingValueText.text = "";
       leftAnchor.text      = "";
       rightAnchor.text     = "";
-      sliderCover.opacity  = 1.0;
+      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       if (timeout_warning) {
         warningText.text    = "Please answer before 5 seconds";
         warningText.opacity = 1.0;
@@ -1060,7 +1061,7 @@ function memoryTrialRoutineBegin(snapshot) {
       // Hide rating UI initially
       imcQuestion.text    = "";
       imcTargetText.text  = "";
-      sliderCover.opacity = 1.0;
+      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       imcWarningText2.opacity = 0.0;
       leftAnchor.text  = "";
       rightAnchor.text = "";
@@ -1098,7 +1099,7 @@ function memoryTrialRoutineEachFrame() {
       productImage.opacity    = 1.0;
       imcQuestion.text        = "";
       imcTargetText.text      = "";
-      sliderCover.opacity     = 1.0;
+      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       imcWarningText2.opacity = 0.0;
       leftAnchor.text         = "";
       rightAnchor.text        = "";
@@ -1152,7 +1153,7 @@ function memoryTrialRoutineEachFrame() {
     cv = Math.min(Math.max(parseFloat(cv.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
 
     if (imcWaitingNext) {
-      sliderCover.opacity     = 1.0;
+      sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       imcWarningText2.opacity = imcTimeoutWarning ? 1.0 : 0.0;
       let delayNeeded = imcTimeoutWarning ? imcWarningDelay : imcNormalDelay;
       if (imcDelayClock.getTime() >= delayNeeded) {
