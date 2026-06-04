@@ -1151,7 +1151,7 @@ function ratingTrialRoutineEnd(snapshot) {
     return Scheduler.Event.NEXT;
   };
 }
-/ ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 //  MEMORY TRIAL  (fires on every block — one catch per block)
 // ═══════════════════════════════════════════════════════════════════════════
 function memoryTrialRoutineBegin(snapshot) {
