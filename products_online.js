@@ -842,6 +842,9 @@ function ratingTrialRoutineEachFrame() {
       rightAnchor.text     = "";
       sliderCover.opacity = USE_SLIDER_COVER ? 1.0 : 0.0;
       warningText.opacity  = 0.0;
+      sliderLine.opacity   = 0.0;
+      sliderMarker.opacity = 0.0;
+      for (const tick of sliderTicks) tick.opacity = 0.0;
 
       if (exposureClock.getTime() >= IMAGE_EXPOSURE_DURATION) {
         // Transition to rating phase
@@ -854,6 +857,9 @@ function ratingTrialRoutineEachFrame() {
         leftAnchor.text  = "Not at all";
         rightAnchor.text = "Very much";
         sliderCover.opacity = 0.0;
+        sliderLine.opacity   = 1.0;
+        sliderMarker.opacity = 1.0;
+        for (const tick of sliderTicks) tick.opacity = 1.0;
         questionClock.reset();   // start 5 s countdown from transition
         // Ignore any mouse clicks that might have accumulated during exposure
         click_ready = false;
