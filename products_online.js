@@ -479,159 +479,79 @@ function instructionsRoutineEnd(snapshot) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  SET ORDER  ← core counterbalancing logic lives here
+//  SET ORDER
 // ═══════════════════════════════════════════════════════════════════════════
-/*
-  Design
-  ──────
-  Products:  13 (Belvita, Chips_Ahoy!, …, Twix)
-  Versions:  3  (original, taste, health)
-  Questions: 3  (liking, taste, health)
-  Blocks:    9  (3 questions × 3 repetitions)
-
-  Constraint: over the full experiment every (product × version) cell is
-  rated with every question exactly once.
-*/
 var setOrderMaxDurationReached, setOrderMaxDuration, setOrderComponents;
 
 function setOrderRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot);
-    t = 0; frameN = -1; continueRoutine = false; routineForceEnded = false;
-    setOrderClock.reset(); routineTimer.reset(); setOrderMaxDurationReached = false;
 
-    const VALID_VERSIONS = ["original", "taste", "health"];
-    const QUESTIONS  = ["liking", "taste", "health"];
-    const BASE_PATH  = "taste&health/";
-    
-    let assigned_version = expInfo["condition"];
-    
-    if (!VALID_VERSIONS.includes(assigned_version)) {
-      assigned_version = "original";
-    }
-    
-    psychoJS.experiment.addData("subject_image_condition", assigned_version);
-    
-    
+    t = 0;
+    frameN = -1;
+    continueRoutine = false;
+    routineForceEnded = false;
+
+    setOrderClock.reset();
+    routineTimer.reset();
+    setOrderMaxDurationReached = false;
+
+    const VERSIONS  = ["original", "taste", "health"];
+    const QUESTIONS = ["liking", "taste", "health"];
+    const BASE_PATH = "taste&health/";
 
     selected_trials = [];
     block_plan = [];
 
-    // ═══════════════════════════════════════════════════════════════════════════
-//  SET ORDER  ← core counterbalancing logic lives here
-// ═══════════════════════════════════════════════════════════════════════════
-/*
-  Design
-  ──────
-  Products:  13 (Belvita, Chips_Ahoy!, …, Twix)
-  Versions:  3  (original, taste, health)
-  Questions: 3  (liking, taste, health)
-  Blocks:    9  (3 questions × 3 repetitions)
-
-  Constraint: over the full experiment every (product × version) cell is
-  rated with every question exactly once.
-
-  Implementation
-  ──────────────
-  1.  For each product, randomly generate a 3×3 Latin-square that maps
-      question → version.  Concretely: generate a random permutation of
-      [0,1,2] for each question type (so the same version is never repeated
-      for a given question across blocks).
-
-  2.  9 blocks are arranged as 3 "rounds" × 3 question-types.
-      - Round r (0-indexed), question q → use version assignment[q][r]
-      - Within each block, the 13 products are shuffled.
-
-  3.  Within each block, one trial is randomly selected as the memory-catch
-      position (never the very first trial of the block to avoid it firing
-      right after the intro).
-
-  Trial object fields (compatible with the rest of the routines):
-    product_id, image_path, block_num (1-9), block_question,
-    block_image_version, is_last_trial_in_block, is_memory_trial_position
-*/
-var setOrderMaxDurationReached, setOrderMaxDuration, setOrderComponents;
-
-function setOrderRoutineBegin(snapshot) {
-  return async function () {
-    TrialHandler.fromSnapshot(snapshot);
-    t = 0; frameN = -1; continueRoutine = false; routineForceEnded = false;
-    setOrderClock.reset(); routineTimer.reset(); setOrderMaxDurationReached = false;
-
-    const VERSIONS   = ["original", "taste", "health"];
-    const QUESTIONS  = ["liking", "taste", "health"];
-    const BASE_PATH  = "taste&health/";
-
-    // Per-product Latin square: for each question, which version to use in rounds 0,1,2
-    // We build a 3×3 matrix where rows = questions, cols = rounds,
-    // and every column is a permutation of VERSIONS.
-    // Strategy: generate one random permutation of versions for round 0,
-    //   rotate +1 for round 1, +2 for round 2 → guarantees no question
-    //   repeats the same version AND each version appears once per question.
     function makeProductAssignment() {
-      // assignment[question_idx][round_idx] = version_idx
-      // Start with a random column-0, then derive columns 1 and 2 by rotation.
-      let col0 = shuffleArray([0, 1, 2]);           // random permutation for round 0
+      let col0 = shuffleArray([0, 1, 2]);
       let assignment = QUESTIONS.map((_, qi) => [
         col0[qi],
         (col0[qi] + 1) % 3,
         (col0[qi] + 2) % 3
       ]);
-      return assignment;  // [3][3]
+      return assignment;
     }
 
-    // Build per-product assignment maps
-    // productAssignments[product] = 3×3 matrix (see above)
     let productAssignments = {};
     for (const prod of all_products) {
       productAssignments[prod] = makeProductAssignment();
     }
 
-    // Build 9 blocks: round 0..2 × question 0..2
-    selected_trials = [];
-    block_plan = [];
-    let global_block_num = 1;
-
-    // Pick 9 of the 13 products at random (without replacement) as memory targets,
-    // one per block.  The remaining 4 products never serve as targets this session.
     let memory_target_pool = shuffleArray([...all_products]).slice(0, 9);
-    // memory_target_pool[block_index] = the product that is the catch target for that block
-    let memory_target_by_block = {};   // filled as we assign block numbers below
 
-    // First pass: build the ordered list of 9 blocks so we can assign targets
     let ordered_blocks = [];
+
     for (let round = 0; round < 3; round++) {
       let round_blocks = QUESTIONS.map((q, qi) => ({
         block_question: q,
         round: round,
         question_idx: qi
       }));
+
       round_blocks = shuffleArray(round_blocks);
-      for (const b of round_blocks) ordered_blocks.push(b);
+
+      for (const b of round_blocks) {
+        ordered_blocks.push(b);
+      }
     }
-    // Assign block numbers and memory targets
+
     for (let bi = 0; bi < ordered_blocks.length; bi++) {
       ordered_blocks[bi].block_num = bi + 1;
       ordered_blocks[bi].memory_target = memory_target_pool[bi];
-      memory_target_by_block[bi + 1] = memory_target_pool[bi];
       block_plan.push(ordered_blocks[bi]);
     }
 
-    // Second pass: build trials
     for (const block of ordered_blocks) {
-      global_block_num = block.block_num;
       let memory_target = block.memory_target;
-
-      // Shuffle products for this block
       let shuffled_products = shuffleArray(all_products);
 
-      // Find index of the memory target product in the shuffled list.
-      // The catch cannot be at index 0 (too close to block intro).
-      // If the target landed at index 0, swap it with a random later position.
       let target_idx = shuffled_products.indexOf(memory_target);
+
       if (target_idx === 0) {
         let swap_with = 1 + Math.floor(Math.random() * (shuffled_products.length - 1));
-        [shuffled_products[0], shuffled_products[swap_with]] = [shuffled_products[swap_with], shuffled_products[0]];
+        [shuffled_products[0], shuffled_products[swap_with]] =
+          [shuffled_products[swap_with], shuffled_products[0]];
         target_idx = swap_with;
       }
 
@@ -642,64 +562,53 @@ function setOrderRoutineBegin(snapshot) {
         let img_path = `${BASE_PATH}${prod}_${version_name}.png`;
 
         selected_trials.push({
-          product_id:               prod,
-          image_path:               img_path,
-          block_image_version:      version_name,
-          block_num:                block.block_num,
-          block_question:           block.block_question,
-          round:                    block.round,
-          is_last_trial_in_block:   (pi === shuffled_products.length - 1) ? 1 : 0,
-          // catch fires on the trial that shows the designated memory target product
+          product_id: prod,
+          image_path: img_path,
+          block_image_version: version_name,
+          block_num: block.block_num,
+          block_question: block.block_question,
+          round: block.round,
+          is_last_trial_in_block: (pi === shuffled_products.length - 1) ? 1 : 0,
           is_memory_trial_position: (pi === target_idx) ? 1 : 0,
-          memory_target_product:    memory_target   // stored for every trial in the block for reference
+          memory_target_product: memory_target
         });
       }
     }
 
     psychoJS.experiment.addData('block_plan', JSON.stringify(block_plan));
+    psychoJS.experiment.addData('n_selected_trials', selected_trials.length);
     psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
+
     setOrderMaxDuration = null;
     setOrderComponents = [];
+
     return Scheduler.Event.NEXT;
   };
 }
 
 function setOrderRoutineEachFrame() {
   return async function () {
-    if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
+    if (
+      psychoJS.experiment.experimentEnded ||
+      psychoJS.eventManager.getKeys({ keyList: ['escape'] }).length > 0
+    ) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
-    return Scheduler.Event.NEXT;
-  };
-}
-function setOrderRoutineEnd(snapshot) {
-  return async function () {
-    psychoJS.experiment.addData('setOrder.stopped', globalClock.getTime());
-    routineTimer.reset();
-    if (currentLoop === psychoJS.experiment) psychoJS.experiment.nextEntry(snapshot);
+    }
+
     return Scheduler.Event.NEXT;
   };
 }
 
-    psychoJS.experiment.addData('block_plan', JSON.stringify(block_plan));
-    psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
-    setOrderMaxDuration = null;
-    setOrderComponents = [];
-    return Scheduler.Event.NEXT;
-  };
-}
-
-function setOrderRoutineEachFrame() {
-  return async function () {
-    if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0)
-      return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
-    return Scheduler.Event.NEXT;
-  };
-}
 function setOrderRoutineEnd(snapshot) {
   return async function () {
     psychoJS.experiment.addData('setOrder.stopped', globalClock.getTime());
+
     routineTimer.reset();
-    if (currentLoop === psychoJS.experiment) psychoJS.experiment.nextEntry(snapshot);
+
+    if (currentLoop === psychoJS.experiment) {
+      psychoJS.experiment.nextEntry(snapshot);
+    }
+
     return Scheduler.Event.NEXT;
   };
 }
@@ -710,33 +619,64 @@ function setOrderRoutineEnd(snapshot) {
 function blockIntroRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot);
-    t = 0; frameN = -1; continueRoutine = true; routineForceEnded = false;
-    blockIntroClock.reset(); routineTimer.reset(); blockIntroMaxDurationReached = false;
 
-    const _bi = snapshot.getCurrentTrial ? snapshot.getCurrentTrial() : {};
-    if (typeof block_num === 'undefined' || block_num === null) block_num = _bi.block_num || 0;
-    if (typeof block_question === 'undefined' || block_question === null) block_question = _bi.block_question || '';
+    t = 0;
+    frameN = -1;
+    continueRoutine = true;
+    routineForceEnded = false;
+
+    blockIntroClock.reset();
+    routineTimer.reset();
+    blockIntroMaxDurationReached = false;
+
+    const _bi = (
+      snapshot &&
+      typeof snapshot.getCurrentTrial === 'function' &&
+      snapshot.getCurrentTrial()
+    ) ? snapshot.getCurrentTrial() : {};
+
+    block_num = (_bi.block_num !== undefined && _bi.block_num !== null)
+      ? _bi.block_num
+      : 0;
+
+    block_question = (_bi.block_question !== undefined && _bi.block_question !== null)
+      ? _bi.block_question
+      : "";
 
     let showBlockIntro = (block_num !== lastSeenBlockNum);
+
     if (!showBlockIntro) {
       continueRoutine = false;
     } else {
       lastSeenBlockNum = block_num;
+
       let introText = "";
-      if (block_question === "liking")
+
+      if (block_question === "liking") {
         introText = "Next block: How much do you LIKE each product?\n\nPress SPACE to begin.";
-      else if (block_question === "taste")
+      } else if (block_question === "taste") {
         introText = "Next block: How TASTY do you think each product is?\n\nPress SPACE to begin.";
-      else if (block_question === "health")
+      } else if (block_question === "health") {
         introText = "Next block: How HEALTHY do you think each product is?\n\nPress SPACE to begin.";
+      } else {
+        introText = "Next block.\n\nPress SPACE to begin.";
+      }
+
       blockIntroText.setText(introText);
-      blockIntroKey.keys = undefined; blockIntroKey.rt = undefined; _blockIntroKey_allKeys = [];
+      blockIntroKey.keys = undefined;
+      blockIntroKey.rt = undefined;
+      _blockIntroKey_allKeys = [];
     }
 
     psychoJS.experiment.addData('blockIntro.started', globalClock.getTime());
+
     blockIntroMaxDuration = null;
     blockIntroComponents = [blockIntroText, blockIntroKey];
-    for (const c of blockIntroComponents) if ('status' in c) c.status = PsychoJS.Status.NOT_STARTED;
+
+    for (const c of blockIntroComponents) {
+      if ('status' in c) c.status = PsychoJS.Status.NOT_STARTED;
+    }
+
     return Scheduler.Event.NEXT;
   };
 }
