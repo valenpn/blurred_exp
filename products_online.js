@@ -1292,7 +1292,7 @@ async function uploadToDataPipe(csvText, filename) {
   });
   const result = await response.json();
   console.log("DataPipe response:", result);
-  if (!response.ok || result.error) throw new Error(result.error || result.message || "Unknown DataPipe error");
+  if (!response.ok || result.error) throw new Error(JSON.stringify(result));
   return result;
 }
 function makeUploadFilename() {
