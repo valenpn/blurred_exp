@@ -1325,15 +1325,3 @@ async function quitPsychoJS(message, isCompleted) {
     return Scheduler.Event.QUIT;
   }
 }
-
-    document.body.innerHTML = `
-      <div style="font-family:Arial,sans-serif;text-align:center;padding-top:80px;font-size:24px;color:white;background:black;height:100vh;">
-        There was a problem saving your data.<br><br>
-        Please contact the researcher.<br><br>
-        Error: ${err.message}
-      </div>
-    `;
-
-    return Scheduler.Event.QUIT;
-  }
-}
