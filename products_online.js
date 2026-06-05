@@ -333,7 +333,7 @@ async function experimentInit() {
   memoryWaitingNext = false; memoryTimeoutWarning = false;
   memoryNormalDelay = 0.5;  memoryWarningDelay = 1.5;
   memoryWarningText = new visual.TextStim({
-    win: psychoJS.window, name: 'memoryWarningText', text: 'Please answer before 8 seconds',
+    win: psychoJS.window, name: 'memoryWarningText', text: 'Please answer before 5 seconds',
     font: 'Arial', pos: [0, -0.28], draggable: false, height: 0.04,
     languageStyle: 'LTR', color: new util.Color('red'), opacity: 0.0, depth: -5.0
   });
@@ -1141,7 +1141,7 @@ function memoryTrialRoutineEachFrame() {
       }
     } else {
       memoryWarningText.opacity = 0.0;
-      if (memoryQuestionClock.getTime() >= 8.0) {
+      if (memoryQuestionClock.getTime() >= 5.0) {
         memoryKey.keys = null; memoryKey.rt = null;
         memoryTimeoutWarning = true; memoryWaitingNext = true;
         memoryDelayClock = new util.Clock(); memoryDelayClock.reset();
