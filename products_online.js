@@ -500,7 +500,7 @@ function setOrderRoutineBegin(snapshot) {
 
     const QUESTIONS = ["liking", "taste", "health"];
     const BASE_PATH = "taste&health/";
-    const VERSION_NAME = "original";
+    const VERSION_NAME = util.getUrlParameters().get('condition') || 'original';
 
     selected_trials = [];
     block_plan = [];
