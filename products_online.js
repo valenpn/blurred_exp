@@ -635,11 +635,11 @@ function blockIntroRoutineBegin(snapshot) {
       let introText = "";
 
       if (block_question === "liking") {
-        introText = "Next block: — LIKING —\n\nHow much do you LIKE each product?\n\nPress SPACE to begin.";
+        introText = "Next block: LIKING\n\nHow much do you LIKE each product?\n\nPress SPACE to begin.";
       } else if (block_question === "taste") {
-        introText = "Next block: — TASTY —\n\nHow TASTY do you think each product is?\n\nPress SPACE to begin.";
+        introText = "Next block: TASTY\n\nHow TASTY do you think each product is?\n\nPress SPACE to begin.";
       } else if (block_question === "health") {
-        introText = "Next block: — HEALTHY —\n\nHow HEALTHY do you think each product is?\n\nPress SPACE to begin.";
+        introText = "Next block: HEALTHY\n\nHow HEALTHY do you think each product is?\n\nPress SPACE to begin.";
       } else {
         introText = "Next block.\n\nPress SPACE to begin.";
       }
