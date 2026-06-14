@@ -206,7 +206,7 @@ async function experimentInit() {
   blockIntroClock = new util.Clock();
   blockIntroText = new visual.TextStim({
     win: psychoJS.window, name: 'blockIntroText', text: '',
-    font: 'Arial', pos: [0, 0], draggable: false, height: 0.038, wrapWidth: 2.0,
+    font: 'Arial', pos: [0, 0], draggable: false, height: 0.05, wrapWidth: 2.0,
     languageStyle: 'LTR', color: new util.Color('white'), depth: 0.0
   });
   blockIntroKey = new core.Keyboard({ psychoJS, clock: new util.Clock(), waitForStart: true });
@@ -308,7 +308,7 @@ async function experimentInit() {
   memoryTrialClock = new util.Clock();
   memoryQuestion = new visual.TextStim({
     win: psychoJS.window, name: 'memoryQuestion',
-    text: 'Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond',
+    text: 'Which product was shown just before? Use keys 1, 2, or 3.',
     font: 'Arial', pos: [0, 0.2], draggable: false, height: 0.05,
     languageStyle: 'LTR', color: new util.Color('white'), depth: -1.0
   });
@@ -635,11 +635,11 @@ function blockIntroRoutineBegin(snapshot) {
       let introText = "";
 
       if (block_question === "liking") {
-        introText = "Next block: How much do you LIKE each product?\n\nPress SPACE to begin.";
+        introText = "— LIKING —\n\nHow much do you LIKE each product?\n\nPress SPACE to begin.";
       } else if (block_question === "taste") {
-        introText = "Next block: How TASTY do you think each product is?\n\nPress SPACE to begin.";
+        introText = "— TASTY —\n\nHow TASTY do you think each product is?\n\nPress SPACE to begin.";
       } else if (block_question === "health") {
-        introText = "Next block: How HEALTHY do you think each product is?\n\nPress SPACE to begin.";
+        introText = "— HEALTHY —\n\nHow HEALTHY do you think each product is?\n\nPress SPACE to begin.";
       } else {
         introText = "Next block.\n\nPress SPACE to begin.";
       }
