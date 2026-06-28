@@ -144,7 +144,7 @@ var setOrderClock;
 var fixationClock, text_fixation;
 var ratingTrialClock;
 // IMAGE_EXPOSURE_DURATION: how long the product image is shown (ms → s)
-var IMAGE_EXPOSURE_DURATION = 1.5;   // 1500 ms
+var IMAGE_EXPOSURE_DURATION = 0.8;   // 1500 ms
 // TTIME_LIMIT: how long the participant has to respond on the black screen
 var TTIME_LIMIT = 5.0;               // 5 000 ms
 var all_questions, SLIDER_MIN, SLIDER_MAX, SLIDER_WIDTH, SLIDER_Y;
