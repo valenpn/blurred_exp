@@ -193,7 +193,7 @@ async function experimentInit() {
   instructionsClock = new util.Clock();
   text_instructions = new visual.TextStim({
     win: psychoJS.window, name: 'text_instructions',
-    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nEach product image will appear briefly.\nThen a black screen will appear \n Rate the product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 5 seconds to respond.\n\nPress SPACE to begin the experiment',
+    text: 'INSTRUCTIONS:\nYou will complete various blocks.\n\nIn each block, you will answer only ONE type of question:\n \n\nBefore each block, you will see which question to answer.\n\nEach product image will appear briefly.So pay attention. \nThen a black screen will appear \n Rate the product from 0 (not at all) to 7 (very much).\nUse the mouse to move the slider and click to confirm.\nYou will have 5 seconds to respond.\n\nPress SPACE to begin the experiment',
     font: 'Arial', pos: [0, 0], draggable: false, height: 0.035, wrapWidth: 1.3,
     languageStyle: 'LTR', color: new util.Color('white'), depth: 0.0
   });
